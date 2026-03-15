@@ -1,0 +1,34 @@
+# ============================================================
+# PlacementResumeAnalyzer - Python Dependencies
+# Install command: pip install -r requirements.txt
+# Python version required: 3.10 or above
+# ============================================================
+
+# ── WEB FRAMEWORK ────────────────────────────────────────────
+fastapi             # FastAPI - our main web framework to build REST APIs
+uvicorn             # Uvicorn - ASGI server to run the FastAPI app
+python-multipart   # Required for file upload (PDF/DOCX) to work in FastAPI
+
+# ── FILE PARSING ─────────────────────────────────────────────
+pdfplumber          # pdfplumber - extracts text from PDF files
+python-docx         # python-docx - extracts text from DOCX (Word) files
+pymupdf             # PyMuPDF (fitz) - fast PDF text extraction
+rapidocr-onnxruntime # RapidOCR - OCR fallback for scanned PDFs
+pillow              # Pillow - Image processing for OCR
+
+# ── AI / ML - EMBEDDINGS + VECTOR SEARCH ────────────────────
+sentence-transformers # Converts resume text to vectors (embeddings) for RAG
+faiss-cpu           # Facebook AI Similarity Search - stores & searches vectors locally
+numpy               # Numerical operations needed by sentence-transformers and FAISS
+
+# ── AI - LLM ─────────────────────────────────────────────
+groq                # Groq SDK - connects to Groq API (llama3-70b) for AI suggestions
+httpx               # HTTP client for Groq and other requests
+
+# ── DATA VALIDATION ──────────────────────────────────────────
+pydantic            # Pydantic - validates request/response data types in FastAPI
+
+# ── ENVIRONMENT VARIABLES ─────────────────────────────────────
+python-dotenv       # Loads GROQ_API_KEY from .env file securely
+# ── UTILITIES & TESTING ───────────────────────────────────────
+requests            # HTTP library for testing API endpoints

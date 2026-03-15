@@ -1,0 +1,3486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Sasurie AI Resume Analyzer</title>
+<link rel="icon" type="image/png" href="logo.png">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<style>
+  :root {
+    --red: #E53935;
+    --red-dark: #C62828;
+    --red-light: #FFEBEE;
+    --red-mid: #EF9A9A;
+    --green: #2E7D32;
+    --green-light: #E8F5E9;
+    --bg: #F5F6FA;
+    --card: #FFFFFF;
+    --text: #1a1a2e;
+    --muted: #6c757d;
+    --border: #e0e0e0;
+    --shadow: 0 4px 20px rgba(0,0,0,0.08);
+    --shadow-lg: 0 8px 40px rgba(229,57,53,0.15);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Poppins', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; margin: 0; padding: 0; }
+  .no-scroll { overflow: hidden !important; }
+
+  /* ── PAGES ── */
+  .page { display: none; min-height: 100vh; }
+  .page.active { display: block; }
+
+  /* ── HOME PAGE ── */
+  #homePage { background: #fff; }
+  .home-hero {
+    background: linear-gradient(135deg, #fff 0%, #fff8f8 100%);
+    padding: 60px 24px 40px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .home-hero::before {
+    content: '';
+    position: absolute; top: -80px; right: -80px;
+    width: 300px; height: 300px;
+    background: radial-gradient(circle, rgba(229,57,53,0.08) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+  .home-hero::after {
+    content: '';
+    position: absolute; bottom: -60px; left: -60px;
+    width: 200px; height: 200px;
+    background: radial-gradient(circle, rgba(229,57,53,0.06) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--red-light); color: var(--red);
+    padding: 6px 16px; border-radius: 100px;
+    font-size: 12px; font-weight: 700; letter-spacing: 0.5px;
+    margin-bottom: 20px; text-transform: uppercase;
+  }
+  .hero-title {
+    font-family: 'Nunito', sans-serif;
+    font-size: 32px; font-weight: 900;
+    line-height: 1.2; color: var(--text);
+    margin-bottom: 12px;
+  }
+  .hero-title span { color: var(--red); }
+  .hero-sub { color: var(--muted); font-size: 14px; margin-bottom: 32px; line-height: 1.6; }
+  .btn-hero-primary {
+    background: var(--red); color: #fff;
+    border: none; border-radius: 14px;
+    padding: 14px 28px; font-size: 15px; font-weight: 700;
+    letter-spacing: 0.3px; cursor: pointer;
+    transition: all 0.25s; box-shadow: 0 4px 15px rgba(229,57,53,0.35);
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .btn-hero-primary:hover { background: var(--red-dark); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(229,57,53,0.45); }
+  .btn-hero-outline {
+    background: transparent; color: var(--red);
+    border: 2px solid var(--red); border-radius: 14px;
+    padding: 12px 28px; font-size: 15px; font-weight: 700;
+    cursor: pointer; transition: all 0.25s;
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .btn-hero-outline:hover { background: var(--red-light); transform: translateY(-2px); }
+  .hero-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+  .features-section { padding: 30px 20px 40px; }
+  .section-label { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 16px; text-align: center; }
+  .feature-card {
+    background: var(--card); border-radius: 20px;
+    padding: 24px 20px; text-align: center;
+    box-shadow: var(--shadow); border: 1px solid rgba(229,57,53,0.08);
+    transition: all 0.3s;
+  }
+  .feature-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+  .feature-icon {
+    width: 56px; height: 56px; border-radius: 16px;
+    background: var(--red); display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 14px; font-size: 22px; color: #fff;
+    box-shadow: 0 4px 12px rgba(229,57,53,0.3);
+  }
+  .feature-title { font-weight: 700; font-size: 15px; margin-bottom: 6px; }
+  .feature-desc { color: var(--muted); font-size: 12.5px; line-height: 1.6; }
+
+  .stats-strip {
+    background: var(--red); color: #fff;
+    padding: 20px; margin: 0 20px 30px;
+    border-radius: 20px; display: flex; justify-content: space-around;
+  }
+  .stat-item { text-align: center; }
+  .stat-num { font-size: 24px; font-weight: 900; font-family: 'Nunito', sans-serif; }
+  .stat-lbl { font-size: 11px; opacity: 0.85; }
+
+  /* ── ANALYZE PAGE ── */
+  #analyzePage { background: var(--bg); }
+  .page-header {
+    background: #fff; padding: 16px 20px;
+    display: flex; align-items: center; gap: 12px;
+    border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+  .back-btn {
+    width: 36px; height: 36px; border-radius: 10px;
+    background: var(--red-light); color: var(--red);
+    display: flex; align-items: center; justify-content: center;
+    border: none; cursor: pointer; font-size: 16px; transition: all 0.2s;
+  }
+  .back-btn:hover { background: var(--red); color: #fff; }
+  .page-title { font-weight: 700; font-size: 17px; color: var(--text); }
+  .page-content { padding: 20px; max-width: 600px; margin: 0 auto; }
+  @media (min-width: 992px) { .page-content { max-width: 1300px; } }
+
+  .upload-zone {
+    background: #fff; border: 2.5px dashed var(--red-mid);
+    border-radius: 20px; padding: 40px 20px; text-align: center;
+    cursor: pointer; transition: all 0.3s; margin-bottom: 16px;
+  }
+  .upload-zone:hover, .upload-zone.drag-over { border-color: var(--red); background: var(--red-light); }
+  .upload-zone.uploaded { border-color: #2E7D32; background: rgba(46,125,50,0.02); border-style: dashed; }
+  .upload-zone.drag-over { border-color: #1565C0; background: rgba(21,101,192,0.05); transform: scale(1.02); }
+  .upload-icon { font-size: 40px; color: var(--red); margin-bottom: 12px; }
+  .upload-icon.uploaded { color: #4CAF50; }
+  .upload-title { font-weight: 700; font-size: 15px; margin-bottom: 4px; }
+  .upload-sub { color: var(--muted); font-size: 12px; margin-bottom: 16px; }
+  .upload-filename { font-weight: 700; color: var(--green); font-size: 15px; margin-bottom: 4px; }
+  .upload-success { color: var(--green); font-size: 13px; margin-bottom: 8px; }
+  .remove-file { color: var(--red); font-size: 12px; cursor: pointer; text-decoration: underline; background: none; border: none; }
+  .btn-browse {
+    background: var(--red); color: #fff; border: none;
+    padding: 10px 24px; border-radius: 100px; font-size: 13px; font-weight: 700;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .btn-browse:hover { background: var(--red-dark); }
+  #fileInput { display: none; }
+
+  .form-card { background: #fff; border-radius: 16px; padding: 20px; margin-bottom: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+  .form-label-custom { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; display: block; }
+  .form-select-custom {
+    width: 100%; padding: 12px 16px; border-radius: 12px;
+    border: 1.5px solid var(--border); font-size: 14px; font-family: 'Poppins', sans-serif;
+    background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23E53935' d='M6 8L1 3h10z'/%3E%3C/svg%3E") no-repeat right 16px center;
+    appearance: none; cursor: pointer; transition: border-color 0.2s;
+  }
+  .form-select-custom:focus { outline: none; border-color: var(--red); }
+  .form-select-custom option { padding: 8px; }
+
+  .btn-analyze {
+    background: var(--red); color: #fff; border: none;
+    width: 100%; padding: 16px; border-radius: 16px;
+    font-size: 16px; font-weight: 700; letter-spacing: 0.5px;
+    cursor: pointer; transition: all 0.3s;
+    box-shadow: 0 4px 15px rgba(229,57,53,0.35);
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    margin-top: 8px;
+  }
+  .btn-analyze:hover:not(:disabled) { background: var(--red-dark); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(229,57,53,0.45); }
+  .btn-analyze:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+  /* ── RESULTS ── */
+  .results-section { margin-top: 24px; }
+  .results-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+  .result-card {
+    background: #fff; border-radius: 16px; padding: 18px;
+    box-shadow: var(--shadow); border: 1px solid rgba(0,0,0,0.04);
+  }
+  .result-card.full-width { grid-column: 1 / -1; }
+  .result-card-title {
+    font-size: 12px; font-weight: 700; color: var(--text);
+    margin-bottom: 14px; display: flex; align-items: center; gap: 6px;
+  }
+  .result-card-title i { font-size: 14px; color: var(--red); }
+  .result-card-title .green { color: #4CAF50; }
+
+  /* ATS Donut */
+  .ats-wrap { display: flex; flex-direction: column; align-items: center; }
+  .donut-container { position: relative; width: 100px; height: 100px; margin-bottom: 8px; }
+  .donut-svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+  .donut-bg { fill: none; stroke: #f0f0f0; stroke-width: 8; }
+  .donut-fill { fill: none; stroke: var(--red); stroke-width: 8; stroke-linecap: round; transition: stroke-dasharray 1.5s ease; }
+  .donut-fill.green { stroke: #4CAF50; }
+  .donut-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; }
+  .donut-pct { font-size: 20px; font-weight: 900; color: var(--text); font-family: 'Nunito', sans-serif; }
+  .donut-grade { font-size: 10px; color: var(--muted); font-weight: 600; }
+
+  /* Skills chips */
+  .skills-wrap { display: flex; flex-wrap: wrap; gap: 6px; }
+  .skill-chip {
+    padding: 4px 10px; border-radius: 100px;
+    font-size: 11px; font-weight: 700;
+  }
+  .chip-green { background: #E8F5E9; color: #2E7D32; }
+  .chip-red { background: #FFEBEE; color: #C62828; }
+  .chip-blue { background: #E3F2FD; color: #1565C0; }
+  .chip-orange { background: #FFF3E0; color: #E65100; }
+
+  /* AI Suggestions */
+  .suggestion-item {
+    display: flex; align-items: flex-start; gap: 8px;
+    padding: 8px 0; border-bottom: 1px solid #f5f5f5; font-size: 12px; line-height: 1.5;
+  }
+  .suggestion-item:last-child { border-bottom: none; padding-bottom: 0; }
+  .suggestion-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--red); margin-top: 5px; flex-shrink: 0; }
+
+  /* Score bars */
+  .score-row { margin-bottom: 12px; }
+  .score-label { display: flex; justify-content: space-between; font-size: 12px; font-weight: 600; margin-bottom: 4px; }
+  .score-bar { height: 7px; border-radius: 100px; background: #f0f0f0; overflow: hidden; }
+  .score-fill { height: 100%; border-radius: 100px; transition: width 1.2s ease; background: var(--red); }
+  .score-fill.high { background: linear-gradient(90deg, #E53935, #FF5722); }
+  .score-fill.mid { background: linear-gradient(90deg, #FF9800, #FFC107); }
+  .score-fill.low { background: linear-gradient(90deg, #9E9E9E, #BDBDBD); }
+
+  .cgpa-badge {
+    display: flex; align-items: center; gap: 10px;
+    background: var(--green-light); border-radius: 12px; padding: 12px 14px;
+  }
+  .cgpa-badge.fail { background: var(--red-light); }
+  .cgpa-icon { font-size: 22px; }
+  .cgpa-text { font-size: 12px; font-weight: 600; }
+  .cgpa-sub { font-size: 11px; color: var(--muted); }
+
+  .cert-item {
+    display: flex; align-items: center; gap: 8px;
+    padding: 8px; border-radius: 10px; background: #fafafa; margin-bottom: 6px;
+    font-size: 12px; font-weight: 600;
+  }
+  .cert-item i { color: var(--red); font-size: 14px; }
+
+  /* Loading Overlay */
+  .loading-overlay {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(8px);
+    z-index: 100000;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 20px;
+  }
+  .loading-overlay.show { display: flex; opacity: 1; }
+  .spinner-ring {
+    width: 70px; height: 70px; border-radius: 50%;
+    border: 6px solid #fce8e8; border-top-color: #e53935;
+    animation: spin 0.8s cubic-bezier(0.5, 0, 0.5, 1) infinite; margin-bottom: 24px;
+    box-shadow: 0 0 15px rgba(229, 57, 53, 0.1);
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-text { font-size: 18px; font-weight: 800; color: #1e293b; margin-bottom: 8px; font-family: 'Nunito', sans-serif; }
+  .loading-sub { font-size: 13px; color: #64748b; font-weight: 500; max-width: 250px; line-height: 1.4; }
+
+  /* ── CREATE RESUME PAGE ── */
+  #createPage { background: var(--bg); }
+  .section-card {
+    background: #fff; border-radius: 20px; padding: 20px;
+    margin-bottom: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  }
+  .section-header {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 16px; padding-bottom: 12px;
+    border-bottom: 2px solid var(--red-light);
+  }
+  .section-icon {
+    width: 34px; height: 34px; border-radius: 10px;
+    background: var(--red); color: #fff;
+    display: flex; align-items: center; justify-content: center; font-size: 15px;
+  }
+  .section-name { font-weight: 800; font-size: 14px; color: var(--text); font-family: 'Nunito', sans-serif; }
+  .form-field { margin-bottom: 12px; }
+  .field-label { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px; display: block; }
+  .field-input {
+    width: 100%; padding: 11px 14px; border-radius: 10px;
+    border: 1.5px solid var(--border); font-size: 13px; font-family: 'Poppins', sans-serif;
+    transition: border-color 0.2s; background: #fafafa;
+  }
+  .field-input:focus { outline: none; border-color: var(--red); background: #fff; }
+  .field-input::placeholder { color: #bbb; }
+  textarea.field-input { resize: vertical; min-height: 80px; }
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+
+  .add-btn {
+    background: var(--red-light); color: var(--red); border: none;
+    padding: 8px 14px; border-radius: 8px; font-size: 12px; font-weight: 700;
+    cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 5px;
+  }
+  .add-btn:hover { background: var(--red); color: #fff; }
+  .section-actions { display: flex; justify-content: flex-end; margin-bottom: 12px; }
+
+  .dynamic-item {
+    border: 1.5px solid var(--border); border-radius: 14px; padding: 14px;
+    margin-bottom: 10px; position: relative; background: #fafafa;
+  }
+  .remove-item {
+    position: absolute; top: 10px; right: 10px;
+    background: var(--red-light); color: var(--red); border: none;
+    width: 26px; height: 26px; border-radius: 6px; font-size: 14px;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+  }
+  .remove-item:hover { background: var(--red); color: #fff; }
+
+  .create-footer {
+    position: sticky; bottom: 0; background: #fff;
+    padding: 16px 20px; display: flex; gap: 10px;
+    box-shadow: 0 -4px 16px rgba(0,0,0,0.08); z-index: 50;
+  }
+  .btn-create-resume, .btn-download-resume {
+    flex: 1; padding: 14px; border-radius: 14px; border: none;
+    font-size: 14px; font-weight: 700; cursor: pointer; transition: all 0.2s;
+    display: flex; align-items: center; justify-content: center; gap: 7px;
+  }
+  .btn-create-resume { background: var(--red); color: #fff; box-shadow: 0 3px 12px rgba(229,57,53,0.3); }
+  .btn-create-resume:hover { background: var(--red-dark); }
+  .btn-download-resume { background: var(--green); color: #fff; box-shadow: 0 3px 12px rgba(46,125,50,0.3); }
+  .btn-download-resume:hover { background: #1B5E20; }
+
+  /* ── TOAST ── */
+  .toast-msg {
+    position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%) translateY(20px);
+    background: var(--text); color: #fff; padding: 12px 20px; border-radius: 100px;
+    font-size: 13px; font-weight: 600; z-index: 9999; opacity: 0;
+    transition: all 0.35s; pointer-events: none; white-space: nowrap;
+  }
+  .toast-msg.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* Bottom nav */
+  .bottom-nav {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: #fff; display: flex; border-top: 1px solid var(--border);
+    box-shadow: 0 -2px 12px rgba(0,0,0,0.06); z-index: 100;
+  }
+  .nav-item {
+    flex: 1; padding: 10px 8px; display: flex; flex-direction: column;
+    align-items: center; gap: 3px; cursor: pointer; border: none; background: none;
+    font-family: 'Poppins', sans-serif; transition: all 0.2s;
+  }
+  .nav-item i { font-size: 20px; color: var(--muted); transition: color 0.2s; }
+  .nav-item span { font-size: 10px; color: var(--muted); font-weight: 600; }
+  .nav-item.active i, .nav-item.active span { color: var(--red); }
+  .nav-item:hover i, .nav-item:hover span { color: var(--red); }
+  body { padding-bottom: 65px; }
+
+  /* Utility */
+  .divider { height: 1px; background: var(--border); margin: 12px 0; }
+  .text-red { color: var(--red); }
+  .text-green { color: var(--green); }
+  .fw-700 { font-weight: 700; }
+  .fs-12 { font-size: 12px; }
+  .fs-13 { font-size: 13px; }
+  .mt-20 { margin-top: 20px; }
+
+  @media (max-width: 400px) {
+    .hero-title { font-size: 26px; }
+    .results-grid { grid-template-columns: 1fr; }
+    .two-col { grid-template-columns: 1fr; }
+  }
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .animate-in { animation: fadeInUp 0.4s ease forwards; }
+
+  /* ═══════════════════════════════════════════════════════════
+     AI DEEP ANALYSIS DASHBOARD — Premium SaaS-style UI
+     ═══════════════════════════════════════════════════════════ */
+
+  /* Full-width analysis page overlay */
+  .deep-analysis-page {
+    display: none;
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: #f1f5f9; z-index: 9500;
+    overflow-y: auto; overflow-x: hidden;
+    animation: fadeInUp 0.35s ease;
+  }
+  .deep-analysis-page.show { display: block; }
+
+  /* Header bar */
+  .da-header {
+    background: #fff;
+    border-bottom: 1px solid #e2e8f0;
+    padding: 14px 24px;
+    display: flex; align-items: center; gap: 14px;
+    position: sticky; top: 0; z-index: 9600;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  }
+  .da-header-title {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800; font-size: 18px;
+    color: #0f172a;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .da-header-title i { color: var(--red); font-size: 20px; }
+  .da-header-badge {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: #fff; font-size: 10px; font-weight: 700;
+    padding: 3px 10px; border-radius: 100px;
+    letter-spacing: 0.5px; text-transform: uppercase;
+  }
+  .da-close-btn {
+    margin-left: auto;
+    width: 36px; height: 36px; border-radius: 10px;
+    background: #f1f5f9; color: #64748b; border: none;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; cursor: pointer; transition: all 0.2s;
+  }
+  .da-close-btn:hover { background: #fee2e2; color: #ef4444; }
+
+  /* Main container */
+  .da-container {
+    max-width: 1300px; margin: 0 auto;
+    padding: 28px 24px 100px;
+  }
+
+  /* Summary Hero Banner */
+  .da-summary-hero {
+    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+    border-radius: 20px;
+    padding: 32px 28px;
+    margin-bottom: 24px;
+    position: relative;
+    overflow: hidden;
+    color: #fff;
+  }
+  .da-summary-hero::before {
+    content: ''; position: absolute;
+    top: -40px; right: -40px;
+    width: 200px; height: 200px;
+    background: radial-gradient(circle, rgba(239,68,68,0.2), transparent 70%);
+    border-radius: 50%;
+  }
+  .da-summary-hero::after {
+    content: ''; position: absolute;
+    bottom: -60px; left: -20px;
+    width: 160px; height: 160px;
+    background: radial-gradient(circle, rgba(59,130,246,0.15), transparent 70%);
+    border-radius: 50%;
+  }
+  .da-summary-label {
+    font-size: 11px; font-weight: 700; letter-spacing: 1.5px;
+    text-transform: uppercase; color: #94a3b8;
+    margin-bottom: 10px; display: flex; align-items: center; gap: 6px;
+  }
+  .da-summary-label i { color: #ef4444; font-size: 14px; }
+  .da-summary-text {
+    font-size: 16px; line-height: 1.75;
+    color: #e2e8f0; font-weight: 400;
+    position: relative; z-index: 1;
+  }
+
+  /* Two-column grid */
+  .da-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  @media (min-width: 768px) {
+    .da-grid { grid-template-columns: 1fr 1fr; }
+  }
+  .da-grid .da-card.full-span {
+    grid-column: 1 / -1;
+  }
+
+  /* Section Cards */
+  .da-card {
+    background: #fff;
+    border-radius: 16px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.03);
+    overflow: hidden;
+    transition: all 0.3s ease;
+    animation: fadeInUp 0.4s ease backwards;
+  }
+  .da-card:hover {
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08), 0 8px 24px rgba(0,0,0,0.04);
+    transform: translateY(-2px);
+  }
+  .da-card-header {
+    padding: 18px 20px 14px;
+    display: flex; align-items: center; gap: 12px;
+    border-bottom: 1px solid #f1f5f9;
+  }
+  .da-card-icon {
+    width: 40px; height: 40px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; flex-shrink: 0;
+  }
+  .da-card-icon.red { background: #fef2f2; color: #ef4444; }
+  .da-card-icon.blue { background: #eff6ff; color: #3b82f6; }
+  .da-card-icon.green { background: #f0fdf4; color: #22c55e; }
+  .da-card-icon.purple { background: #faf5ff; color: #a855f7; }
+  .da-card-icon.orange { background: #fff7ed; color: #f97316; }
+  .da-card-icon.teal { background: #f0fdfa; color: #14b8a6; }
+  .da-card-icon.rose { background: #fff1f2; color: #f43f5e; }
+  .da-card-icon.indigo { background: #eef2ff; color: #6366f1; }
+  .da-card-icon.cyan { background: #ecfeff; color: #06b6d4; }
+  .da-card-icon.amber { background: #fffbeb; color: #f59e0b; }
+  .da-card-title {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800; font-size: 15px;
+    color: #0f172a;
+  }
+  .da-card-body {
+    padding: 16px 20px 20px;
+  }
+
+  /* Bullet list items inside cards */
+  .da-list { list-style: none; padding: 0; margin: 0; }
+  .da-list li {
+    position: relative;
+    padding: 10px 0 10px 24px;
+    font-size: 13.5px; line-height: 1.7;
+    color: #334155;
+    border-bottom: 1px solid #f8fafc;
+  }
+  .da-list li:last-child { border-bottom: none; padding-bottom: 0; }
+  .da-list li::before {
+    content: '';
+    position: absolute; left: 0; top: 17px;
+    width: 8px; height: 8px; border-radius: 50%;
+    background: #e2e8f0;
+  }
+
+  /* Accent colors for bullet dots */
+  .da-card .da-list.red li::before { background: #fca5a5; }
+  .da-card .da-list.blue li::before { background: #93c5fd; }
+  .da-card .da-list.green li::before { background: #86efac; }
+  .da-card .da-list.purple li::before { background: #c4b5fd; }
+  .da-card .da-list.orange li::before { background: #fdba74; }
+  .da-card .da-list.teal li::before { background: #5eead4; }
+  .da-card .da-list.rose li::before { background: #fda4af; }
+  .da-card .da-list.indigo li::before { background: #a5b4fc; }
+  .da-card .da-list.cyan li::before { background: #67e8f9; }
+  .da-card .da-list.amber li::before { background: #fcd34d; }
+
+  /* Bold inline labels within list items */
+  .da-list li strong {
+    color: #0f172a;
+    font-weight: 700;
+  }
+
+  /* Sub-headings within card body */
+  .da-subhead {
+    font-size: 12px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.8px;
+    color: #94a3b8; margin: 14px 0 6px;
+  }
+  .da-subhead:first-child { margin-top: 0; }
+
+  /* Paragraph text in cards */
+  .da-text {
+    font-size: 13.5px; line-height: 1.8;
+    color: #475569; margin: 0;
+  }
+
+  /* Timeline / Action plan */
+  .da-timeline { padding: 0; margin: 0; list-style: none; }
+  .da-timeline li {
+    position: relative;
+    padding: 12px 0 12px 32px;
+    font-size: 13.5px; line-height: 1.7;
+    color: #334155;
+    border-left: 2px solid #e2e8f0;
+    margin-left: 8px;
+  }
+  .da-timeline li::before {
+    content: '';
+    position: absolute; left: -7px; top: 18px;
+    width: 12px; height: 12px; border-radius: 50%;
+    background: #fff; border: 3px solid #ef4444;
+  }
+  .da-timeline li:last-child { border-left-color: transparent; }
+  .da-timeline li strong { color: #0f172a; display: block; margin-bottom: 2px; }
+
+  /* Fallback raw text */
+  .da-raw-text {
+    font-size: 13.5px; line-height: 1.8;
+    color: #334155; white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+
+  /* Animation delays for staggered entrance */
+  .da-card:nth-child(1) { animation-delay: 0.05s; }
+  .da-card:nth-child(2) { animation-delay: 0.10s; }
+  .da-card:nth-child(3) { animation-delay: 0.15s; }
+  .da-card:nth-child(4) { animation-delay: 0.20s; }
+  .da-card:nth-child(5) { animation-delay: 0.25s; }
+  .da-card:nth-child(6) { animation-delay: 0.30s; }
+  .da-card:nth-child(7) { animation-delay: 0.35s; }
+  .da-card:nth-child(8) { animation-delay: 0.40s; }
+  .da-card:nth-child(9) { animation-delay: 0.45s; }
+  .da-card:nth-child(10) { animation-delay: 0.50s; }
+
+  /* Responsive adjustments */
+  @media (max-width: 767px) {
+    .da-container { padding: 16px 14px 100px; }
+    .da-summary-hero { padding: 24px 18px; border-radius: 16px; }
+    .da-summary-text { font-size: 14px; }
+    .da-card-header { padding: 14px 16px 12px; }
+    .da-card-body { padding: 14px 16px 16px; }
+    .da-card-icon { width: 36px; height: 36px; font-size: 16px; border-radius: 10px; }
+    .da-card-title { font-size: 14px; }
+    .da-list li { font-size: 13px; padding-left: 20px; }
+    .da-list li::before { width: 6px; height: 6px; top: 16px; }
+  }
+
+  @media (min-width: 992px) {
+    .da-container { padding: 32px 40px 80px; }
+    .da-summary-hero { padding: 36px 36px; }
+    .da-summary-text { font-size: 17px; }
+    .da-header { padding: 16px 40px; }
+    .da-card-title { font-size: 16px; }
+    .da-list li { font-size: 14px; }
+  }
+
+  /* ═══════════════════════════════════════════════════════════
+     RESUME PREVIEW — Professional A4 Layout
+     ═══════════════════════════════════════════════════════════ */
+  .resume-preview-page {
+    display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: #e2e8f0; z-index: 500;
+    overflow-y: auto; overflow-x: hidden;
+    animation: fadeInUp 0.35s ease;
+  }
+  .resume-preview-page.show { display: block; }
+  .rp-header {
+    background: #fff; border-bottom: 1px solid #e2e8f0;
+    padding: 12px 24px; display: flex; align-items: center; gap: 12px;
+    position: sticky; top: 0; z-index: 210;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  }
+  .rp-header-title { font-family: 'Nunito',sans-serif; font-weight: 800; font-size: 16px; color: #0f172a; }
+  .rp-close-btn {
+    width: 34px; height: 34px; border-radius: 10px;
+    background: #f1f5f9; color: #64748b; border: none;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; cursor: pointer; transition: all 0.2s;
+  }
+  .rp-close-btn:hover { background: #fee2e2; color: #ef4444; }
+  .rp-actions { margin-left: auto; display: flex; gap: 8px; }
+  .rp-btn {
+    padding: 8px 16px; border-radius: 10px; border: none;
+    font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.2s;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .rp-btn-primary { background: var(--red); color: #fff; }
+  .rp-btn-primary:hover { background: var(--red-dark); }
+  .rp-btn-outline { background: #f1f5f9; color: #334155; }
+  .rp-btn-outline:hover { background: #e2e8f0; }
+  .rp-warning-count {
+    background: #fbbf24; color: #78350f; font-size: 10px; font-weight: 800;
+    padding: 2px 8px; border-radius: 100px; margin-left: 6px;
+  }
+
+  /* A4 resume sheet isolated */
+  .rp-container { 
+    width: 100%; 
+    padding: 30px 0 100px; box-sizing: border-box; 
+    background: #f5f5f5;
+  }
+  #resume-preview {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+  }
+  .resume-page {
+    width: 794px;
+    min-height: 1123px;
+    background: white;
+    padding: 40px;
+    box-sizing: border-box;
+    box-shadow: 0 15px 50px rgba(0,0,0,0.15);
+    position: relative;
+    font-family: 'Poppins', sans-serif;
+    color: #1a1a2e;
+  }
+
+  /* Responsive Preview (Using Scale only for Visual, but captured clean in JS) */
+  @media (max-width: 850px) {
+    #resume-preview { transform-origin: top center; transform: scale(0.85); }
+    .rp-container { height: auto; }
+  }
+  @media (max-width: 600px) {
+    #resume-preview { transform: scale(0.45); }
+    .rp-container { margin-top: -280px; height: 550px; overflow: hidden; }
+  }
+
+  /* PRINT CSS */
+  @media print {
+    body { background: white !important; margin: 0 !important; padding: 0 !important; }
+    .rp-header, .bottom-nav, .pb-header, #placebot-btn, .create-footer { display: none !important; }
+    .resume-preview-page { position: static !important; display: block !important; overflow: visible !important; }
+    .rp-container { padding: 0 !important; margin: 0 !important; background: white !important; }
+    #resume-preview { transform: none !important; margin: 0 !important; display: block !important; }
+    .resume-page { box-shadow: none !important; margin: 0 !important; width: 100% !important; padding: 0 !important; }
+  }
+
+  /* Resume content styles - Standardized Alignment & Spacing */
+  .rv-name { font-family: 'Nunito',sans-serif; font-size: 30px; font-weight: 900; color: #0f172a; margin-bottom: 8px; text-align: center; }
+  .rv-contact { font-size: 13.5px; color: #475569; margin-bottom: 4px; line-height: 1.6; text-align: center; }
+  .rv-contact a { color: #3b82f6; text-decoration: none; border-bottom: 1px solid transparent; transition: border-color 0.2s; }
+  .rv-contact a:hover { border-color: #3b82f6; }
+  .rv-divider { height: 2px; background: linear-gradient(90deg, #D94848, #f97316); margin: 20px 0 30px; border-radius: 2px; }
+  
+  .rv-section {
+    page-break-inside: avoid;
+    break-inside: avoid;
+    width: 100%;
+  }
+
+  .rv-section-title {
+    font-family: 'Nunito',sans-serif; 
+    font-size: 18px; 
+    font-weight: 700;
+    text-transform: uppercase; 
+    letter-spacing: 1.2px; 
+    color: #D94848;
+    margin: 40px 0 16px; 
+    padding-bottom: 8px;
+    border-bottom: 2.5px solid #fce4e4;
+    display: block; 
+    width: 100%;
+    page-break-after: avoid;
+    break-after: avoid;
+  }
+  
+  .rv-item { 
+    margin-bottom: 20px; 
+    padding-left: 20px; /* Consistent indentation for items */
+    width: 100%; 
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+  .rv-item:last-child { margin-bottom: 0; }
+
+  .rv-row { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: baseline; 
+    flex-wrap: nowrap; /* Prevent wrapping for cleaner alignment */
+    margin-bottom: 6px; 
+    width: 100%;
+  }
+  .rv-bold { font-weight: 700; color: #0f172a; font-size: 14.5px; }
+  .rv-sub { font-size: 13px; color: #64748b; font-weight: 500; text-align: right; flex-shrink: 0; } /* Right align dates */
+  
+  .rv-text { font-size: 14px; line-height: 1.8; color: #334155; margin: 0 0 10px; padding-left: 20px; }
+  
+  .rv-bullet { 
+    padding-left: 40px; /* Wider indentation for list items */
+    position: relative; 
+    font-size: 14px; 
+    line-height: 1.7; 
+    color: #334155; 
+    margin-bottom: 10px; 
+    width: 100%; 
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+  .rv-bullet::before { 
+    content: '•'; 
+    position: absolute; 
+    left: 20px; /* Position bullet relative to item indentation */
+    color: #D94848; 
+    font-weight: 900; 
+    font-size: 18px;
+    line-height: 1;
+    top: 2px;
+  }
+  
+  .rv-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; padding-left: 20px; }
+  .rv-chip {
+    font-size: 12px; padding: 5px 14px; border-radius: 6px;
+    background: #f8fafc; color: #334155; font-weight: 600;
+    border: 1px solid #e2e8f0;
+  }
+
+  /* Sample data styling - looks like regular text for completeness */
+  .rv-sample {
+    color: #64748b; /* Slightly muted but clearly visible */
+    font-style: normal;
+  }
+
+  /* Keep rv-missing for compatibility, but make it less intrusive */
+  .rv-missing {
+    color: #94a3b8;
+    font-style: italic;
+  }
+
+  /* Form field empty warning indicator */
+  .field-empty-warn {
+    position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+    color: #f59e0b; font-size: 14px;
+  }
+  .form-field { position: relative; }
+
+  /* Download warning modal */
+  .dl-modal-overlay {
+    display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.5); z-index: 300;
+    align-items: center; justify-content: center;
+  }
+  .dl-modal-overlay.show { display: flex; }
+  .dl-modal {
+    background: #fff; border-radius: 20px; padding: 28px;
+    max-width: 420px; width: 90%; text-align: center;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+    animation: fadeInUp 0.3s ease;
+  }
+  .dl-modal-icon { font-size: 48px; color: #f59e0b; margin-bottom: 12px; }
+  .dl-modal-title { font-family: 'Nunito',sans-serif; font-weight: 800; font-size: 18px; margin-bottom: 8px; color: #0f172a; }
+  .dl-modal-text { font-size: 13px; color: #64748b; line-height: 1.6; margin-bottom: 20px; }
+  .dl-modal-btns { display: flex; gap: 10px; justify-content: center; }
+  .dl-modal-btn {
+    padding: 10px 22px; border-radius: 12px; border: none;
+    font-size: 13px; font-weight: 700; cursor: pointer; transition: all 0.2s;
+  }
+  .dl-modal-btn.primary { background: var(--red); color: #fff; }
+  .dl-modal-btn.primary:hover { background: var(--red-dark); }
+  /* ── DYNAMIC RESUME BUILDER STYLES ── */
+  .add-more-btn {
+    width: 100%;
+    padding: 14px;
+    border: 2px dashed #D94848;
+    background: rgba(217,72,72,0.02);
+    color: #D94848;
+    cursor: pointer;
+    border-radius: 12px;
+    font-weight: 700;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 10px;
+  }
+  .add-more-btn:hover {
+    background: #D94848;
+    color: white;
+    box-shadow: 0 4px 12px rgba(217,72,72,0.25);
+  }
+  .section-card {
+    position: relative;
+    padding-top: 35px !important; /* Make room for absolute controls */
+  }
+  .section-controls {
+    display: flex;
+    gap: 6px;
+    position: absolute;
+    top: 12px;
+    right: 15px;
+    z-index: 10;
+  }
+  .control-btn {
+    width: 28px;
+    height: 28px;
+    border: 1px solid #e2e8f0;
+    background: white;
+    color: #64748b;
+    cursor: pointer;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    transition: all 0.2s;
+  }
+  .control-btn:hover {
+    background: #f8fafc;
+    color: #0f172a;
+    border-color: #cbd5e1;
+  }
+  .control-btn.delete:hover {
+    background: #fee2e2;
+    color: #ef4444;
+    border-color: #fca5a5;
+  }
+  .control-btn:disabled {
+    opacity: 0.2;
+    cursor: not-allowed;
+    background: #f1f5f9;
+  }
+
+  /* Add Section Button */
+  .btn-add-section {
+    background: #1e293b;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 100px;
+    font-weight: 700;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 20px auto;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  }
+
+  /* Modal for New Section */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 2000;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-overlay.show { display: flex; }
+  .modal-box {
+    background: white;
+    width: 90%;
+    max-width: 450px;
+    padding: 28px;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+    animation: fadeInUp 0.3s ease;
+  }
+  .modal-title { font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 18px; margin-bottom: 20px; text-align: center; }
+  .modal-footer { display: flex; gap: 10px; margin-top: 24px; }
+  .modal-btn { flex: 1; padding: 12px; border-radius: 12px; border: none; font-weight: 700; cursor: pointer; }
+  .modal-btn.primary { background: #D94848; color: white; }
+  .modal-btn.secondary { background: #f1f5f9; color: #475569; }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════ HOME PAGE ═══════════════ -->
+<div id="homePage" class="page active">
+  <div class="home-hero">
+    <!-- Top Left Logo -->
+    <div style="position:absolute; top:20px; left:20px; z-index:1000; display:flex; align-items:center;">
+      <img src="logo.png" alt="Sasurie Logo" style="height:42px; width:auto; max-width:180px; object-fit:contain; filter:drop-shadow(0 2px 6px rgba(0,0,0,0.08)); border-radius:8px;" />
+    </div>
+
+    <div class="hero-badge"><i class="bi bi-stars"></i> Powered by AI</div>
+    <!-- Language option removed as requested -->
+    <h1 class="hero-title">Sasurie AI Resume Analyzer<br/><span>for Placement</span></h1>
+    <p class="hero-sub">Upload your resume, get instant ATS score,<br/>skill gap analysis & AI-powered suggestions</p>
+    <div class="hero-btns">
+      <button class="btn-hero-primary" onclick="goTo('analyzePage','analyze'); event.preventDefault();">
+        <i class="bi bi-search"></i> Analyze Resume
+      </button>
+      <button class="btn-hero-outline" onclick="goTo('createPage','create'); event.preventDefault();">
+        <i class="bi bi-file-earmark-plus"></i> Create Resume
+      </button>
+    </div>
+  </div>
+
+  <div class="features-section">
+    <p class="section-label">What we do</p>
+    <div class="row g-3">
+      <div class="col-4">
+        <div class="feature-card">
+          <div class="feature-icon"><i class="bi bi-clipboard2-check"></i></div>
+          <div class="feature-title">ATS Score</div>
+          <div class="feature-desc">ATS friendly check with compatibility score</div>
+        </div>
+      </div>
+      <div class="col-4">
+        <div class="feature-card">
+          <div class="feature-icon"><i class="bi bi-cpu"></i></div>
+          <div class="feature-title">Skill Analyzer</div>
+          <div class="feature-desc">Extracts technical & soft skills from resume</div>
+        </div>
+      </div>
+      <div class="col-4">
+        <div class="feature-card">
+          <div class="feature-icon"><i class="bi bi-lightbulb"></i></div>
+          <div class="feature-title">AI Suggestions</div>
+          <div class="feature-desc">AI-powered tips to improve for placements</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="stats-strip mt-3">
+      <div class="stat-item"><div class="stat-num">7</div><div class="stat-lbl">Departments</div></div>
+      <div class="stat-item"><div class="stat-num">70+</div><div class="stat-lbl">Job Roles</div></div>
+      <div class="stat-item"><div class="stat-num">AI</div><div class="stat-lbl">Groq Powered</div></div>
+    </div>
+
+    <div class="row g-3 mt-2">
+      <div class="col-6">
+        <div class="feature-card">
+          <div class="feature-icon" style="background:#1565C0"><i class="bi bi-file-earmark-pdf"></i></div>
+          <div class="feature-title">PDF & DOCX</div>
+          <div class="feature-desc">Supports all major resume formats</div>
+        </div>
+      </div>
+      <div class="col-6">
+        <div class="feature-card">
+          <div class="feature-icon" style="background:#2E7D32"><i class="bi bi-mortarboard"></i></div>
+          <div class="feature-title">CGPA Check</div>
+          <div class="feature-desc">Checks CGPA eligibility per job role</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ ANALYZE PAGE ═══════════════ -->
+<div id="analyzePage" class="page">
+  <div class="page-header">
+    <button class="back-btn" onclick="goTo('homePage','home')"><i class="bi bi-arrow-left"></i></button>
+    <span class="page-title">AI Resume Analyzer</span>
+  </div>
+  <div class="page-content">
+
+    <!-- Upload Zone -->
+    <div class="upload-zone" id="uploadZone" onclick="triggerUpload()" ondragover="onDragOver(event)" ondrop="onDrop(event)" ondragleave="onDragLeave(event)">
+      <div id="uploadDefault">
+        <label for="fileInput" style="cursor:pointer">
+          <div class="upload-icon"><i class="bi bi-cloud-arrow-up"></i></div>
+          <div class="upload-title">Upload your Resume</div>
+          <div class="upload-sub">(PDF or DOCX) · Drag & drop or click to browse</div>
+        </label>
+        <button class="btn-browse" onclick="event.stopPropagation(); triggerUpload()">Browse Files</button>
+      </div>
+      <div id="uploadDone" style="display:none">
+        <div class="upload-icon uploaded"><i class="bi bi-file-earmark-text-fill"></i></div>
+        <div class="upload-filename" id="uploadedName">Resume.pdf</div>
+        <div class="upload-success">File uploaded successfully!</div>
+        <button class="remove-file" onclick="event.stopPropagation(); removeFile()">Remove file</button>
+      </div>
+    </div>
+    <input type="file" id="fileInput" accept=".pdf,.docx" onchange="onFileSelect(event)" style="display:none"/>
+
+    <!-- Department -->
+    <div class="form-card">
+      <label class="form-label-custom" for="deptSelect">Select Department</label>
+      <select class="form-select-custom" id="deptSelect" name="department" autocomplete="organization" onchange="loadJobs()">
+        <option value="">Choose a department...</option>
+        <option value="AIDS">AI & DS (Artificial Intelligence & Data Science)</option>
+        <option value="CSE">CSE (Computer Science Engineering)</option>
+        <option value="IT">IT (Information Technology)</option>
+        <option value="EEE">EEE (Electrical & Electronics Engineering)</option>
+        <option value="ECE">ECE (Electronics & Communication Engineering)</option>
+        <option value="MECH">Mechanical Engineering</option>
+        <option value="CIVIL">Civil Engineering</option>
+        <option value="CYBER">Cyber Security</option>
+      </select>
+    </div>
+
+    <!-- Job Role -->
+    <div class="form-card">
+      <label class="form-label-custom" for="jobSelect">Select Professional Job Role</label>
+      <select class="form-select-custom" id="jobSelect" name="selected_job" autocomplete="organization-title" onchange="checkAnalyzeReady()">
+        <option value="">Choose a job role...</option>
+      </select>
+    </div>
+
+    <button type="button" class="btn-analyze" id="analyzeBtn" onclick="analyzeResume(event)" disabled>
+      <i class="bi bi-magic"></i> Analyze Resume
+    </button>
+
+    <!-- Results -->
+    <div class="results-section" id="resultsSection" style="display:none">
+
+      <div class="results-grid animate-in">
+        <!-- ATS Score -->
+        <div class="result-card">
+          <div class="result-card-title"><i class="bi bi-clipboard2-pulse"></i> ATS Score</div>
+          <div class="ats-wrap">
+            <div class="donut-container">
+              <svg class="donut-svg" viewBox="0 0 36 36">
+                <circle class="donut-bg" cx="18" cy="18" r="15.9"/>
+                <circle class="donut-fill" id="atsArc" cx="18" cy="18" r="15.9" stroke-dasharray="0 100"/>
+              </svg>
+              <div class="donut-text">
+                <div class="donut-pct" id="atsPct">0%</div>
+                <div class="donut-grade" id="atsGrade">--</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Detected Skills -->
+        <div class="result-card">
+          <div class="result-card-title" style="color:#2E7D32"><i class="bi bi-check-circle-fill green"></i> Detected Skills</div>
+          <div class="skills-wrap" id="detectedSkills"></div>
+        </div>
+
+        <!-- Missing Skills -->
+        <div class="result-card">
+          <div class="result-card-title"><i class="bi bi-exclamation-circle"></i> Missing Skills</div>
+          <div class="skills-wrap" id="missingSkills"></div>
+        </div>
+
+        <!-- AI Suggestions -->
+        <div class="result-card">
+          <div class="result-card-title"><i class="bi bi-stars"></i> AI Suggestions</div>
+          <div id="aiSuggestions"></div>
+        </div>
+      </div>
+
+      <!-- Full width: Section Scores -->
+      <div class="result-card full-width mt-3 animate-in" id="sectionScoresCard">
+        <div class="result-card-title"><i class="bi bi-bar-chart-fill"></i> Section Scores</div>
+        <div id="sectionScores"></div>
+      </div>
+
+      <!-- Full width: CGPA & Certs -->
+      <div class="result-card full-width mt-3 animate-in" id="cgpaCard">
+        <div class="result-card-title"><i class="bi bi-mortarboard-fill"></i> Eligibility & Certifications</div>
+        <div id="cgpaInfo"></div>
+      </div>
+
+      <!-- Full width: Portfolio -->
+      <div class="result-card full-width mt-3 animate-in" id="portfolioCard">
+        <div class="result-card-title"><i class="bi bi-globe2"></i> Portfolio & Online Presence</div>
+        <div id="portfolioInfo"></div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div style="display: flex; gap: 12px; margin-top: 16px; flex-wrap: wrap;">
+        <!-- AI Deep Analysis Button -->
+        <button class="btn-analyze" id="deepAnalysisBtn" onclick="getDeepAnalysis()" style="flex: 1; margin-top: 0; background: linear-gradient(135deg, #1e293b, #0f172a); box-shadow: 0 4px 20px rgba(15,23,42,0.35); border: 1px solid rgba(255,255,255,0.08);">
+          <i class="bi bi-robot"></i> Get Full AI Deep Analysis
+          <span style="font-size:10px; background:rgba(239,68,68,0.9); padding:2px 8px; border-radius:100px; margin-left:6px;">AI</span>
+        </button>
+
+        <!-- AI Career Roadmap Generator Button -->
+        <button class="btn-analyze" id="roadmapBtn" onclick="openRoadmapGenerator()" style="flex: 1; margin-top: 0; background: #e53935; color: white; border: none; font-weight: 700; transition: background 0.2s;" onmouseover="this.style.background='#c62828'" onmouseout="this.style.background='#e53935'">
+          <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" style="margin-right:4px;">
+            <path d="M13 10V3L4 14h7v7l9-11h-7z"/>
+          </svg>
+          Create Skill Learning Roadmap
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ CREATE RESUME PAGE ═══════════════ -->
+<div id="createPage" class="page">
+  <div class="page-header">
+    <button class="back-btn" onclick="goTo('homePage','home')"><i class="bi bi-arrow-left"></i></button>
+    <span class="page-title">Create Your Resume</span>
+  </div>
+  <div class="page-content" style="padding-bottom:120px">
+    
+    <div id="sections-container">
+      <!-- Section cards will be rendered here dynamically or moved here -->
+
+    <!-- Personal Info -->
+    <div class="section-card" data-section-id="personal">
+      <div class="section-controls">
+        <button class="control-btn" onclick="moveUp(this)" title="Move Up"><i class="bi bi-arrow-up"></i></button>
+        <button class="control-btn" onclick="moveDown(this)" title="Move Down"><i class="bi bi-arrow-down"></i></button>
+        <button class="control-btn delete" onclick="deleteSection(this)" title="Delete"><i class="bi bi-trash"></i></button>
+      </div>
+      <div class="section-header">
+        <div class="section-icon"><i class="bi bi-person-fill"></i></div>
+        <span class="section-name">Personal Information</span>
+      </div>
+      <div class="two-col">
+        <div class="form-field"><label class="field-label" for="c_name">Full Name</label><input class="field-input" id="c_name" name="name" autocomplete="name" placeholder="Your full name"/></div>
+        <div class="form-field"><label class="field-label" for="c_phone">Phone Number</label><input class="field-input" id="c_phone" name="phone" autocomplete="tel" placeholder="+91 XXXXX XXXXX"/></div>
+      </div>
+      <div class="two-col">
+        <div class="form-field"><label class="field-label" for="c_email">Email</label><input class="field-input" id="c_email" name="email" autocomplete="email" placeholder="email@example.com"/></div>
+        <div class="form-field"><label class="field-label" for="c_college">College</label><input class="field-input" id="c_college" name="college" autocomplete="organization" placeholder="College Name"/></div>
+      </div>
+      <div class="two-col">
+        <div class="form-field"><label class="field-label" for="c_linkedin">LinkedIn Profile</label><input class="field-input" id="c_linkedin" name="linkedin" autocomplete="url" placeholder="linkedin.com/in/..."/></div>
+        <div class="form-field"><label class="field-label" for="c_github">GitHub Profile</label><input class="field-input" id="c_github" name="github" autocomplete="url" placeholder="github.com/..."/></div>
+      </div>
+      <div class="form-field"><label class="field-label" for="c_portfolio">Portfolio Website</label><input class="field-input" id="c_portfolio" name="portfolio" autocomplete="url" placeholder="yourportfolio.com"/></div>
+    </div>
+
+    <!-- Hobbies -->
+    <div class="section-card" data-section-id="hobbies">
+      <div class="section-controls">
+        <button class="control-btn" onclick="moveUp(this)" title="Move Up"><i class="bi bi-arrow-up"></i></button>
+        <button class="control-btn" onclick="moveDown(this)" title="Move Down"><i class="bi bi-arrow-down"></i></button>
+        <button class="control-btn delete" onclick="deleteSection(this)" title="Delete"><i class="bi bi-trash"></i></button>
+      </div>
+      <div class="section-header">
+        <div class="section-icon"><i class="bi bi-heart-pulse-fill"></i></div>
+        <span class="section-name">Hobbies</span>
+      </div>
+      <div id="hobbiesList">
+        <div class="form-field">
+          <label class="field-label" for="c_hobbies">Your Hobbies</label>
+          <input class="field-input" id="c_hobbies" name="hobbies" autocomplete="off" placeholder="Contributing to Open Source, Photography, Chess..."/>
+        </div>
+      </div>
+      <button class="add-more-btn" onclick="addHobby()">
+        <i class="bi bi-plus-lg"></i> Add Another Hobby
+      </button>
+    </div>
+
+    <!-- Summary -->
+    <div class="section-card" data-section-id="summary">
+      <div class="section-controls">
+        <button class="control-btn" onclick="moveUp(this)" title="Move Up"><i class="bi bi-arrow-up"></i></button>
+        <button class="control-btn" onclick="moveDown(this)" title="Move Down"><i class="bi bi-arrow-down"></i></button>
+        <button class="control-btn delete" onclick="deleteSection(this)" title="Delete"><i class="bi bi-trash"></i></button>
+      </div>
+      <div class="section-header">
+        <div class="section-icon"><i class="bi bi-chat-quote-fill"></i></div>
+        <span class="section-name">Professional Summary</span>
+      </div>
+      <div class="form-field">
+        <label class="field-label" for="c_summary">Summary</label>
+        <textarea class="field-input" id="c_summary" name="summary" autocomplete="off" rows="4" placeholder="Brief summary about yourself and your career objectives..."></textarea>
+      </div>
+    </div>
+
+    <!-- Education -->
+    <div class="section-card" data-section-id="education">
+      <div class="section-controls">
+        <button class="control-btn" onclick="moveUp(this)" title="Move Up"><i class="bi bi-arrow-up"></i></button>
+        <button class="control-btn" onclick="moveDown(this)" title="Move Down"><i class="bi bi-arrow-down"></i></button>
+        <button class="control-btn delete" onclick="deleteSection(this)" title="Delete"><i class="bi bi-trash"></i></button>
+      </div>
+      <div class="section-header">
+        <div class="section-icon"><i class="bi bi-mortarboard-fill"></i></div>
+        <span class="section-name">Education</span>
+      </div>
+      <p class="field-label mb-1">College</p>
+      <div class="two-col">
+        <div class="form-field"><label class="field-label" for="c_degree">Degree</label>
+          <select class="field-input" id="c_degree" name="degree" autocomplete="off">
+            <option value="">Select Degree</option>
+            <option>B.E</option><option>B.Tech</option><option>B.Sc</option>
+            <option>M.Tech</option><option>M.E</option><option>MBA</option>
+            <option>Diploma</option>
+          </select>
+        </div>
+        <div class="form-field"><label class="field-label" for="c_dept">Department</label><input class="field-input" id="c_dept" name="dept" autocomplete="organization" placeholder="CSE / IT / AIDS..."/></div>
+      </div>
+      <div class="two-col">
+        <div class="form-field"><label class="field-label" for="c_period">Study Period</label><input class="field-input" id="c_period" name="study_period" autocomplete="off" placeholder="2022 - 2026"/></div>
+        <div class="form-field"><label class="field-label" for="c_cgpa">CGPA / Percentage</label><input class="field-input" id="c_cgpa" name="cgpa" autocomplete="off" placeholder="8.5 / 85%"/></div>
+      </div>
+      <div class="divider"></div>
+      <p class="field-label mb-1">12th Standard</p>
+      <div class="two-col">
+        <div class="form-field"><label class="field-label" for="c_12th">Percentage</label><input class="field-input" id="c_12th" name="hsc_pct" autocomplete="off" placeholder="90%"/></div>
+        <div class="form-field"><label class="field-label" for="c_12yr">Year of Passing</label><input class="field-input" id="c_12yr" name="hsc_year" autocomplete="off" placeholder="2022"/></div>
+      </div>
+      <div class="divider"></div>
+      <p class="field-label mb-1">10th Standard</p>
+      <div class="two-col">
+        <div class="form-field"><label class="field-label" for="c_10th">Percentage</label><input class="field-input" id="c_10th" name="sslc_pct" autocomplete="off" placeholder="92%"/></div>
+        <div class="form-field"><label class="field-label" for="c_10yr">Year of Passing</label><input class="field-input" id="c_10yr" name="sslc_year" autocomplete="off" placeholder="2020"/></div>
+      </div>
+    </div>
+
+    <!-- Skills -->
+    <div class="section-card" data-section-id="skills">
+      <div class="section-controls">
+        <button class="control-btn" onclick="moveUp(this)" title="Move Up"><i class="bi bi-arrow-up"></i></button>
+        <button class="control-btn" onclick="moveDown(this)" title="Move Down"><i class="bi bi-arrow-down"></i></button>
+        <button class="control-btn delete" onclick="deleteSection(this)" title="Delete"><i class="bi bi-trash"></i></button>
+      </div>
+      <div class="section-header">
+        <div class="section-icon"><i class="bi bi-lightning-fill"></i></div>
+        <span class="section-name">Skills</span>
+      </div>
+      <div id="skillsList">
+        <div class="dynamic-item">
+          <div class="form-field"><label class="field-label" for="c_techskills_cat">Skill Category</label><input class="field-input" id="c_techskills_cat" name="skill_category" value="Technical Skills"/></div>
+          <div class="form-field"><label class="field-label" for="c_techskills">Skills (comma separated)</label><input class="field-input" id="c_techskills" name="skills" placeholder="Python, JavaScript, React..."/></div>
+        </div>
+        <div class="dynamic-item">
+          <div class="form-field"><label class="field-label" for="c_softskills_cat">Skill Category</label><input class="field-input" id="c_softskills_cat" name="skill_category" value="Soft Skills"/></div>
+          <div class="form-field"><label class="field-label" for="c_softskills">Skills (comma separated)</label><input class="field-input" id="c_softskills" name="skills" placeholder="Communication, Teamwork..."/></div>
+        </div>
+      </div>
+      <button class="add-more-btn" onclick="addSkill()">
+        <i class="bi bi-plus-lg"></i> Add Another Skill Category
+      </button>
+    </div>
+
+    <!-- Areas of Interest -->
+    <div class="section-card" data-section-id="interests">
+      <div class="section-controls">
+        <button class="control-btn" onclick="moveUp(this)" title="Move Up"><i class="bi bi-arrow-up"></i></button>
+        <button class="control-btn" onclick="moveDown(this)" title="Move Down"><i class="bi bi-arrow-down"></i></button>
+        <button class="control-btn delete" onclick="deleteSection(this)" title="Delete"><i class="bi bi-trash"></i></button>
+      </div>
+      <div class="section-header">
+        <div class="section-icon"><i class="bi bi-heart-fill"></i></div>
+        <span class="section-name">Areas of Interest</span>
+      </div>
+      <div id="interestsList">
+        <div class="form-field"><label class="field-label visually-hidden" for="c_interest1">Interest 1</label><input class="field-input" id="c_interest1" name="interest" placeholder="Interest 1 (e.g., Web Development)"/></div>
+        <div class="form-field"><label class="field-label visually-hidden" for="c_interest2">Interest 2</label><input class="field-input" id="c_interest2" name="interest" placeholder="Interest 2 (e.g., Machine Learning)"/></div>
+        <div class="form-field"><label class="field-label visually-hidden" for="c_interest3">Interest 3</label><input class="field-input" id="c_interest3" name="interest" placeholder="Interest 3 (e.g., Cloud Computing)"/></div>
+      </div>
+      <button class="add-more-btn" onclick="addInterest()">
+        <i class="bi bi-plus-lg"></i> Add Another Interest
+      </button>
+    </div>
+
+    <!-- Projects -->
+    <div class="section-card" data-section-id="projects">
+      <div class="section-controls">
+        <button class="control-btn" onclick="moveUp(this)" title="Move Up"><i class="bi bi-arrow-up"></i></button>
+        <button class="control-btn" onclick="moveDown(this)" title="Move Down"><i class="bi bi-arrow-down"></i></button>
+        <button class="control-btn delete" onclick="deleteSection(this)" title="Delete"><i class="bi bi-trash"></i></button>
+      </div>
+      <div class="section-header">
+        <div class="section-icon"><i class="bi bi-folder-fill"></i></div>
+        <span class="section-name">Projects</span>
+      </div>
+      <div id="projectsList">
+        <div class="dynamic-item" id="proj_0">
+          <button class="remove-item" onclick="removeItem('proj_0')"><i class="bi bi-x"></i></button>
+          <div class="form-field"><label class="field-label" for="proj_title_0">Project Title</label><input class="field-input" id="proj_title_0" name="project_title" autocomplete="organization-title" placeholder="Project Name"/></div>
+          <div class="form-field"><label class="field-label" for="proj_desc_0">Description</label><textarea class="field-input" id="proj_desc_0" name="project_description" autocomplete="off" rows="2" placeholder="What did you build and what problem did it solve?"></textarea></div>
+          <div class="form-field"><label class="field-label" for="proj_tech_0">Technologies Used</label><input class="field-input" id="proj_tech_0" name="project_tech" autocomplete="off" placeholder="React, Node.js, MongoDB..."/></div>
+          <div class="two-col">
+            <div class="form-field">
+              <label class="field-label" for="proj_type_0">Type</label>
+              <select class="field-input" id="proj_type_0" name="project_type" autocomplete="off"><option>Individual Project</option><option>Team Project</option><option>Academic Project</option></select>
+            </div>
+            <div class="form-field"><label class="field-label" for="proj_git_0">GitHub Link</label><input class="field-input" id="proj_git_0" name="project_github" autocomplete="url" placeholder="github.com/..."/></div>
+          </div>
+        </div>
+      </div>
+      <button class="add-more-btn" onclick="addProject()">
+        <i class="bi bi-plus-lg"></i> Add Another Project
+      </button>
+    </div>
+
+    <!-- Internships -->
+    <div class="section-card" data-section-id="internships">
+      <div class="section-controls">
+        <button class="control-btn" onclick="moveUp(this)" title="Move Up"><i class="bi bi-arrow-up"></i></button>
+        <button class="control-btn" onclick="moveDown(this)" title="Move Down"><i class="bi bi-arrow-down"></i></button>
+        <button class="control-btn delete" onclick="deleteSection(this)" title="Delete"><i class="bi bi-trash"></i></button>
+      </div>
+      <div class="section-header">
+        <div class="section-icon"><i class="bi bi-briefcase-fill"></i></div>
+        <span class="section-name">Internships</span>
+      </div>
+      <div id="internshipsList">
+        <div class="dynamic-item" id="intern_0">
+          <button class="remove-item" onclick="removeItem('intern_0')"><i class="bi bi-x"></i></button>
+          <div class="two-col">
+            <div class="form-field"><label class="field-label" for="intern_role_0">Internship Role</label><input class="field-input" id="intern_role_0" name="internship_role" autocomplete="organization-title" placeholder="Frontend Developer Intern"/></div>
+            <div class="form-field"><label class="field-label" for="intern_comp_0">Company Name</label><input class="field-input" id="intern_comp_0" name="internship_company" autocomplete="organization" placeholder="ABC Tech Pvt Ltd"/></div>
+          </div>
+          <div class="two-col">
+            <div class="form-field"><label class="field-label" for="intern_loc_0">Location</label><input class="field-input" id="intern_loc_0" name="internship_location" autocomplete="address-level2" placeholder="Chennai / Remote"/></div>
+            <div class="form-field"><label class="field-label" for="intern_dur_0">Duration</label><input class="field-input" id="intern_dur_0" name="internship_duration" autocomplete="off" placeholder="June 2024 - Aug 2024"/></div>
+          </div>
+          <div class="form-field"><label class="field-label" for="intern_desc_0">Work Description</label><textarea class="field-input" id="intern_desc_0" name="internship_description" autocomplete="off" rows="2" placeholder="What you did and achieved..."></textarea></div>
+        </div>
+      </div>
+      <button class="add-more-btn" onclick="addInternship()">
+        <i class="bi bi-plus-lg"></i> Add Another Internship
+      </button>
+    </div>
+
+    <!-- Certifications -->
+    <div class="section-card" data-section-id="certs">
+      <div class="section-controls">
+        <button class="control-btn" onclick="moveUp(this)" title="Move Up"><i class="bi bi-arrow-up"></i></button>
+        <button class="control-btn" onclick="moveDown(this)" title="Move Down"><i class="bi bi-arrow-down"></i></button>
+        <button class="control-btn delete" onclick="deleteSection(this)" title="Delete"><i class="bi bi-trash"></i></button>
+      </div>
+      <div class="section-header">
+        <div class="section-icon"><i class="bi bi-patch-check-fill"></i></div>
+        <span class="section-name">Certifications</span>
+      </div>
+      <div id="certsList">
+        <div class="dynamic-item" id="cert_0">
+          <button class="remove-item" onclick="removeItem('cert_0')"><i class="bi bi-x"></i></button>
+          <div class="two-col">
+            <div class="form-field"><label class="field-label" for="cert_name_0">Certification Name</label><input class="field-input" id="cert_name_0" name="certification_name" autocomplete="off" placeholder="Python for Data Science"/></div>
+            <div class="form-field"><label class="field-label" for="cert_plat_0">Platform / Company</label><input class="field-input" id="cert_plat_0" name="certification_platform" autocomplete="organization" placeholder="Coursera / NPTEL"/></div>
+          </div>
+        </div>
+      </div>
+      <button class="add-more-btn" onclick="addCert()">
+        <i class="bi bi-plus-lg"></i> Add Another Certification
+      </button>
+    </div>
+
+    <!-- Achievements -->
+    <div class="section-card" data-section-id="achievements">
+      <div class="section-controls">
+        <button class="control-btn" onclick="moveUp(this)" title="Move Up"><i class="bi bi-arrow-up"></i></button>
+        <button class="control-btn" onclick="moveDown(this)" title="Move Down"><i class="bi bi-arrow-down"></i></button>
+        <button class="control-btn delete" onclick="deleteSection(this)" title="Delete"><i class="bi bi-trash"></i></button>
+      </div>
+      <div class="section-header">
+        <div class="section-icon"><i class="bi bi-trophy-fill"></i></div>
+        <span class="section-name">Achievements</span>
+      </div>
+      <div id="achievementsList">
+        <div class="form-field">
+          <label class="field-label" for="c_tech_achieve">Technical Achievements</label>
+          <input class="field-input" id="c_tech_achieve" name="tech_achievements" placeholder="Hackathon winner, Coding contests, Symposium prizes..."/>
+        </div>
+        <div class="form-field">
+          <label class="field-label" for="c_nontech_achieve">Non-Technical Achievements</label>
+          <input class="field-input" id="c_nontech_achieve" name="nontech_achievements" placeholder="Sports, cultural achievements..."/>
+        </div>
+      </div>
+      <button class="add-more-btn" onclick="addAchievement()">
+        <i class="bi bi-plus-lg"></i> Add Another Achievement
+      </button>
+    </div>
+
+
+    <!-- References -->
+    <div class="section-card" data-section-id="references">
+      <div class="section-controls">
+        <button class="control-btn" onclick="moveUp(this)" title="Move Up"><i class="bi bi-arrow-up"></i></button>
+        <button class="control-btn" onclick="moveDown(this)" title="Move Down"><i class="bi bi-arrow-down"></i></button>
+        <button class="control-btn delete" onclick="deleteSection(this)" title="Delete"><i class="bi bi-trash"></i></button>
+      </div>
+      <div class="section-header">
+        <div class="section-icon" style="background:#607D8B"><i class="bi bi-people-fill"></i></div>
+        <span class="section-name">References</span>
+      </div>
+      <div class="two-col">
+        <div class="form-field"><label class="field-label" for="c_ref_name">Professor Name</label><input class="field-input" id="c_ref_name" name="ref_name" autocomplete="name" placeholder="Dr. S. Kumar"/></div>
+        <div class="form-field"><label class="field-label" for="c_ref_desig">Designation</label><input class="field-input" id="c_ref_desig" name="ref_designation" autocomplete="organization-title" placeholder="Associate Professor"/></div>
+      </div>
+      <div class="two-col">
+        <div class="form-field"><label class="field-label" for="c_ref_college">College Name</label><input class="field-input" id="c_ref_college" name="ref_college" autocomplete="organization" placeholder="College Name"/></div>
+        <div class="form-field"><label class="field-label" for="c_ref_contact">Contact Details</label><input class="field-input" id="c_ref_contact" name="ref_contact" autocomplete="email" placeholder="Email / Phone"/></div>
+      </div>
+    </div>
+
+    </div> <!-- End sections-container -->
+
+    <button class="btn-add-section" onclick="openNewSectionModal()">
+      <i class="bi bi-plus-circle-fill"></i> Add New Section
+    </button>
+
+  <!-- Footer Buttons -->
+  <div class="create-footer">
+    <button class="btn-create-resume" onclick="previewResume()"><i class="bi bi-eye-fill"></i> Preview Resume</button>
+    <button class="btn-download-resume" onclick="downloadResume()"><i class="bi bi-download"></i> Download Resume</button>
+  </div>
+</div>
+</div> <!-- Close createPage -->
+
+<!-- ═══════════════ RESUME PREVIEW OVERLAY ═══════════════ -->
+<div class="resume-preview-page" id="resumePreviewPage">
+  <div class="rp-header">
+    <button class="rp-close-btn" onclick="closeResumePreview()"><i class="bi bi-arrow-left"></i></button>
+    <span class="rp-header-title">Resume Preview</span>
+    <span class="rp-warning-count" id="rpWarningCount" style="display:none"></span>
+    <div class="rp-actions">
+      <button class="rp-btn rp-btn-outline" onclick="closeResumePreview()"><i class="bi bi-pencil"></i> Edit</button>
+      <button class="rp-btn rp-btn-primary" onclick="downloadFromPreview()"><i class="bi bi-download"></i> Download</button>
+    </div>
+  </div>
+    <div class="rp-container">
+      <div id="resume-preview">
+        <div class="resume-page">
+           <!-- Resume content rendered dynamically -->
+        </div>
+      </div>
+    </div>
+</div>
+
+<!-- Download Warning Modal -->
+<div class="dl-modal-overlay" id="dlModalOverlay">
+  <div class="dl-modal">
+    <div class="dl-modal-icon"><i class="bi bi-exclamation-triangle-fill"></i></div>
+    <div class="dl-modal-title">Missing Fields Detected</div>
+    <div class="dl-modal-text" id="dlModalText">Some fields are empty. They will appear in <strong style="color:#ef4444">red</strong> in your resume to remind you to update them later.</div>
+    <div class="dl-modal-btns">
+      <button class="dl-modal-btn secondary" onclick="closeDlModal()">Go Back</button>
+      <button class="dl-modal-btn primary" onclick="confirmDownload()"><i class="bi bi-download"></i> Download Anyway</button>
+    </div>
+  </div>
+</div>
+
+<!-- New Section Modal -->
+<div class="modal-overlay" id="newSectionModal">
+  <div class="modal-box">
+    <div class="modal-title">Add New Custom Section</div>
+    <div class="form-field">
+      <label class="field-label" for="ns_name">Section Name (e.g., Publications)</label>
+      <input class="field-input" id="ns_name" name="new_section_name" placeholder="Enter section title..."/>
+    </div>
+    <div class="form-field">
+      <label class="field-label" for="ns_type">Input Type</label>
+      <select class="field-input" id="ns_type" name="new_section_type">
+        <option value="text">Text Block</option>
+        <option value="list" disabled>List Style (Coming Soon)</option>
+      </select>
+    </div>
+    <div class="modal-footer">
+      <button class="modal-btn secondary" onclick="closeNewSectionModal()">Cancel</button>
+      <button class="modal-btn primary" onclick="addCustomSection()">Create Section</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ AI DEEP ANALYSIS OVERLAY ═══════════════ -->
+<div class="deep-analysis-page" id="deepAnalysisPage">
+  <div class="da-header">
+    <button class="da-close-btn" onclick="closeDeepAnalysis()"><i class="bi bi-arrow-left"></i></button>
+    <div class="da-header-title" id="daOverlayTitle"><i class="bi bi-robot"></i> AI Deep Analysis</div>
+    <span class="da-header-badge">AI</span>
+    <button class="da-close-btn" onclick="closeDeepAnalysis()" style="margin-left:auto"><i class="bi bi-x-lg"></i></button>
+  </div>
+  <div class="da-container">
+    <!-- Summary Hero -->
+    <div class="da-summary-hero" id="daSummaryHero" style="display:none">
+      <div class="da-summary-label"><i class="bi bi-stars"></i> Placement Readiness Summary</div>
+      <div class="da-summary-text" id="daSummaryText"></div>
+    </div>
+    <!-- Analysis Cards Grid -->
+    <div class="da-grid" id="daCardsGrid"></div>
+  </div>
+</div>
+
+<!-- ── Bottom Nav ── -->
+<div class="bottom-nav">
+  <button class="nav-item active" id="nav-home" onclick="goTo('homePage','home')">
+    <i class="bi bi-house-fill"></i><span>Home</span>
+  </button>
+  <button class="nav-item" id="nav-analyze" onclick="goTo('analyzePage','analyze')">
+    <i class="bi bi-search-heart"></i><span>Analyze</span>
+  </button>
+  <button class="nav-item" id="nav-create" onclick="goTo('createPage','create')">
+    <i class="bi bi-file-earmark-plus-fill"></i><span>Create</span>
+  </button>
+</div>
+
+<!-- Modern Loading Overlay -->
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="spinner-ring"></div>
+  <div id="loadingText" class="loading-text">Analyzing Data...</div>
+  <div id="loadingSub" class="loading-sub">Please wait while we process your request</div>
+</div>
+
+<!-- Toast -->
+<div class="toast-msg" id="toastMsg"></div>
+
+
+<script>
+// ═══════════════════════════════════════════════
+// CONFIG — change BASE_URL to your FastAPI server
+// ═══════════════════════════════════════════════
+const BASE_URL = 'http://127.0.0.1:8000';
+let sessionId = null;
+let uploadedFile = null;
+let projIdx = 1, internIdx = 1, certIdx = 1; // Indexes for dynamic fields
+
+// ── DEPARTMENT DATA (from College PDF) ──────────
+const DEPT_JOBS = {
+  AIDS: {
+    label: 'AI & DS',
+    jobs: ['AI Engineer','Data Scientist','Machine Learning Engineer','Data Analyst',
+           'Business Intelligence Analyst','NLP Engineer','Computer Vision Engineer',
+           'Big Data Engineer','Data Engineer','AI Research Scientist'],
+    min_cgpa: { 'AI Engineer':7.5,'Data Scientist':7.5,'Machine Learning Engineer':7,
+                'Data Analyst':6.5,'Business Intelligence Analyst':6.5,'NLP Engineer':7.5,
+                'Computer Vision Engineer':7.5,'Big Data Engineer':7,'Data Engineer':7,'AI Research Scientist':8 },
+    certs: {
+      'AI Engineer':['Machine Learning Certification','Deep Learning Certification','Python Certification'],
+      'Data Scientist':['Data Science Certification','Machine Learning Certification','SQL Certification'],
+      'Machine Learning Engineer':['Machine Learning Certification','Deep Learning Certification'],
+      'Data Analyst':['Data Analytics Certification','Excel Certification','SQL Certification'],
+      'Business Intelligence Analyst':['Power BI Certification','Tableau Certification'],
+      'NLP Engineer':['NLP Certification','Deep Learning Certification'],
+      'Computer Vision Engineer':['Computer Vision Certification','Deep Learning Certification'],
+      'Big Data Engineer':['Hadoop Certification','Spark Certification'],
+      'Data Engineer':['Data Engineering Certification','SQL Certification'],
+      'AI Research Scientist':['Advanced AI Certification','Research Publications'],
+    },
+    skills: {
+      'AI Engineer':['Python','TensorFlow','PyTorch','Scikit-learn'],
+      'Data Scientist':['Python','R','SQL','Tableau','Power BI'],
+      'Machine Learning Engineer':['Python','TensorFlow','Keras','Scikit-learn'],
+      'Data Analyst':['Excel','SQL','Power BI','Tableau'],
+      'Business Intelligence Analyst':['Power BI','Tableau','SQL'],
+      'NLP Engineer':['Python','TensorFlow','NLTK','Hugging Face'],
+      'Computer Vision Engineer':['Python','OpenCV','TensorFlow'],
+      'Big Data Engineer':['Hadoop','Spark','Python'],
+      'Data Engineer':['SQL','Python','Apache Spark'],
+      'AI Research Scientist':['Python','TensorFlow','PyTorch'],
+    }
+  },
+  CSE: {
+    label: 'CSE',
+    jobs: ['Software Developer','Full Stack Developer','Backend Developer','Frontend Developer',
+           'Cybersecurity Analyst','Cloud Engineer','DevOps Engineer','Game Developer',
+           'Mobile App Developer','System Architect'],
+    min_cgpa: { 'Software Developer':7,'Full Stack Developer':7,'Backend Developer':7,
+                'Frontend Developer':6.5,'Cybersecurity Analyst':7,'Cloud Engineer':7,
+                'DevOps Engineer':7,'Game Developer':6.5,'Mobile App Developer':6.5,'System Architect':8 },
+    certs: {
+      'Software Developer':['Java Certification','Python Certification','Data Structures Certification'],
+      'Full Stack Developer':['Full Stack Development Certification','Web Development Certification'],
+      'Backend Developer':['Backend Development Certification'],
+      'Frontend Developer':['Frontend Development Certification'],
+      'Cybersecurity Analyst':['CEH Certification','Cyber Security Certification'],
+      'Cloud Engineer':['AWS Certification','Azure Certification'],
+      'DevOps Engineer':['DevOps Certification','Docker Certification'],
+      'Game Developer':['Unity Certification'],
+      'Mobile App Developer':['Android Development Certification'],
+      'System Architect':['Cloud Architect Certification'],
+    },
+    skills: {
+      'Software Developer':['Java','Python','C++','Git'],
+      'Full Stack Developer':['HTML','CSS','JavaScript','React','Node.js'],
+      'Backend Developer':['Java','Python','Node.js','SQL'],
+      'Frontend Developer':['HTML','CSS','JavaScript','React'],
+      'Cybersecurity Analyst':['Kali Linux','Wireshark','Metasploit'],
+      'Cloud Engineer':['AWS','Azure','Docker'],
+      'DevOps Engineer':['Docker','Kubernetes','Jenkins'],
+      'Game Developer':['Unity','Unreal Engine','C#'],
+      'Mobile App Developer':['Android Studio','Kotlin','Flutter'],
+      'System Architect':['AWS','Azure'],
+    }
+  },
+  IT: {
+    label: 'IT',
+    jobs: ['IT Support Engineer','System Administrator','Network Engineer','Database Administrator',
+           'Web Developer','Cloud Administrator','Cyber Security Specialist',
+           'Systems Analyst','IT Consultant','Technical Support Engineer'],
+    min_cgpa: { 'IT Support Engineer':6.5,'System Administrator':7,'Network Engineer':7,
+                'Database Administrator':7,'Web Developer':6.5,'Cloud Administrator':7,
+                'Cyber Security Specialist':7,'Systems Analyst':7,'IT Consultant':7,'Technical Support Engineer':6.5 },
+    certs: {
+      'IT Support Engineer':['CompTIA A+ Certification','IT Support Certification'],
+      'System Administrator':['Microsoft Certified System Administrator','Linux Certification'],
+      'Network Engineer':['CCNA Certification','Network+ Certification'],
+      'Database Administrator':['Oracle Certification','SQL Certification'],
+      'Web Developer':['Web Development Certification'],
+      'Cloud Administrator':['AWS Certification','Azure Certification'],
+      'Cyber Security Specialist':['CEH Certification','Cyber Security Certification'],
+      'Systems Analyst':['Systems Analysis Certification'],
+      'IT Consultant':['ITIL Certification'],
+      'Technical Support Engineer':['Technical Support Certification'],
+    },
+    skills: {
+      'IT Support Engineer':['Windows','Linux','Helpdesk Software'],
+      'System Administrator':['Windows Server','Linux','VMware'],
+      'Network Engineer':['Cisco Packet Tracer','Network Monitoring Tools'],
+      'Database Administrator':['Oracle','MySQL','SQL Server'],
+      'Web Developer':['HTML','CSS','JavaScript','PHP'],
+      'Cloud Administrator':['AWS','Azure','Google Cloud'],
+      'Cyber Security Specialist':['Kali Linux','Wireshark','Metasploit'],
+      'Systems Analyst':['UML Tools','Database Tools'],
+      'IT Consultant':['IT Service Management Tools'],
+      'Technical Support Engineer':['Remote Desktop Tools','Helpdesk Software'],
+    }
+  },
+  EEE: {
+    label: 'EEE',
+    jobs: ['Electrical Design Engineer','Power Systems Engineer','Electrical Maintenance Engineer',
+           'PLC Engineer','Automation Engineer','Power Plant Engineer','Renewable Energy Engineer',
+           'Control Systems Engineer','Electrical Project Engineer','Substation Engineer'],
+    min_cgpa: { 'Electrical Design Engineer':7,'Power Systems Engineer':7,'Electrical Maintenance Engineer':6.5,
+                'PLC Engineer':7,'Automation Engineer':7,'Power Plant Engineer':7,'Renewable Energy Engineer':7,
+                'Control Systems Engineer':7,'Electrical Project Engineer':7,'Substation Engineer':7 },
+    certs: {
+      'Electrical Design Engineer':['Electrical Design Certification','AutoCAD Electrical Certification'],
+      'Power Systems Engineer':['Power System Certification'],
+      'Electrical Maintenance Engineer':['Electrical Maintenance Certification'],
+      'PLC Engineer':['PLC Certification','Industrial Automation Certification'],
+      'Automation Engineer':['Industrial Automation Certification'],
+      'Power Plant Engineer':['Power Plant Engineering Certification'],
+      'Renewable Energy Engineer':['Solar Energy Certification','Renewable Energy Certification'],
+      'Control Systems Engineer':['Control Systems Certification'],
+      'Electrical Project Engineer':['Project Management Certification'],
+      'Substation Engineer':['Substation Engineering Certification'],
+    },
+    skills: {
+      'Electrical Design Engineer':['AutoCAD Electrical','MATLAB'],
+      'Power Systems Engineer':['ETAP','MATLAB'],
+      'Electrical Maintenance Engineer':['Maintenance Management Software'],
+      'PLC Engineer':['PLC Programming Software','SCADA'],
+      'Automation Engineer':['SCADA','MATLAB'],
+      'Power Plant Engineer':['Power Monitoring Software'],
+      'Renewable Energy Engineer':['HOMER Software'],
+      'Control Systems Engineer':['MATLAB','Simulink'],
+      'Electrical Project Engineer':['Project Management Software'],
+      'Substation Engineer':['Power System Analysis Software'],
+    }
+  },
+  ECE: {
+    label: 'ECE',
+    jobs: ['Embedded Systems Engineer','VLSI Design Engineer','Communication Engineer',
+           'RF Engineer','Network Engineer','IoT Engineer','Robotics Engineer',
+           'PCB Design Engineer','Signal Processing Engineer','Electronics Test Engineer'],
+    min_cgpa: { 'Embedded Systems Engineer':7,'VLSI Design Engineer':7,'Communication Engineer':7,
+                'RF Engineer':7,'Network Engineer':7,'IoT Engineer':7,'Robotics Engineer':7,
+                'PCB Design Engineer':7,'Signal Processing Engineer':7,'Electronics Test Engineer':6.5 },
+    certs: {
+      'Embedded Systems Engineer':['Embedded Systems Certification','Microcontroller Programming Certification'],
+      'VLSI Design Engineer':['VLSI Design Certification'],
+      'Communication Engineer':['Communication Systems Certification'],
+      'RF Engineer':['RF Engineering Certification'],
+      'Network Engineer':['CCNA Certification'],
+      'IoT Engineer':['IoT Certification'],
+      'Robotics Engineer':['Robotics Certification'],
+      'PCB Design Engineer':['PCB Design Certification'],
+      'Signal Processing Engineer':['Digital Signal Processing Certification'],
+      'Electronics Test Engineer':['Electronics Testing Certification'],
+    },
+    skills: {
+      'Embedded Systems Engineer':['Embedded C','Arduino IDE','Proteus'],
+      'VLSI Design Engineer':['Verilog','VHDL','Cadence'],
+      'Communication Engineer':['MATLAB','Simulink'],
+      'RF Engineer':['HFSS','ADS'],
+      'Network Engineer':['Cisco Packet Tracer','Network Monitoring Tools'],
+      'IoT Engineer':['Arduino','Python','Node-RED'],
+      'Robotics Engineer':['ROS','MATLAB'],
+      'PCB Design Engineer':['Altium Designer','Eagle'],
+      'Signal Processing Engineer':['MATLAB','Simulink'],
+      'Electronics Test Engineer':['LabVIEW','MATLAB'],
+    }
+  },
+  MECH: {
+    label: 'Mechanical',
+    jobs: ['Mechanical Design Engineer','Production Engineer','Quality Control Engineer',
+           'Maintenance Engineer','Automobile Engineer','HVAC Engineer','Robotics Engineer',
+           'Manufacturing Engineer','Tool Design Engineer','Industrial Engineer'],
+    min_cgpa: { 'Mechanical Design Engineer':7,'Production Engineer':6.5,'Quality Control Engineer':6.5,
+                'Maintenance Engineer':6.5,'Automobile Engineer':7,'HVAC Engineer':6.5,'Robotics Engineer':7,
+                'Manufacturing Engineer':7,'Tool Design Engineer':7,'Industrial Engineer':7 },
+    certs: {
+      'Mechanical Design Engineer':['CAD Design Certification','Mechanical Design Certification'],
+      'Production Engineer':['Production Engineering Certification'],
+      'Quality Control Engineer':['Quality Control Certification'],
+      'Maintenance Engineer':['Maintenance Engineering Certification'],
+      'Automobile Engineer':['Automobile Engineering Certification'],
+      'HVAC Engineer':['HVAC Certification'],
+      'Robotics Engineer':['Robotics Certification'],
+      'Manufacturing Engineer':['Manufacturing Engineering Certification'],
+      'Tool Design Engineer':['Tool Design Certification'],
+      'Industrial Engineer':['Industrial Engineering Certification'],
+    },
+    skills: {
+      'Mechanical Design Engineer':['AutoCAD','SolidWorks','CATIA'],
+      'Production Engineer':['Production Planning Software'],
+      'Quality Control Engineer':['Quality Management Software'],
+      'Maintenance Engineer':['Maintenance Management Software'],
+      'Automobile Engineer':['AutoCAD','CATIA'],
+      'HVAC Engineer':['HVAC Design Software'],
+      'Robotics Engineer':['MATLAB','ROS'],
+      'Manufacturing Engineer':['CAM Software'],
+      'Tool Design Engineer':['AutoCAD','CATIA'],
+      'Industrial Engineer':['Operations Management Software'],
+    }
+  },
+  CIVIL: {
+    label: 'Civil',
+    jobs: ['Structural Engineer','Site Engineer','Construction Engineer','Transportation Engineer',
+           'Geotechnical Engineer','Environmental Engineer','Water Resources Engineer',
+           'Quantity Surveyor','Project Engineer','Urban Planning Engineer'],
+    min_cgpa: { 'Structural Engineer':7,'Site Engineer':6.5,'Construction Engineer':6.5,
+                'Transportation Engineer':7,'Geotechnical Engineer':7,'Environmental Engineer':7,
+                'Water Resources Engineer':7,'Quantity Surveyor':6.5,'Project Engineer':7,'Urban Planning Engineer':7 },
+    certs: {
+      'Structural Engineer':['Structural Design Certification'],
+      'Site Engineer':['Construction Management Certification'],
+      'Construction Engineer':['Construction Engineering Certification'],
+      'Transportation Engineer':['Transportation Engineering Certification'],
+      'Geotechnical Engineer':['Geotechnical Engineering Certification'],
+      'Environmental Engineer':['Environmental Engineering Certification'],
+      'Water Resources Engineer':['Water Resources Engineering Certification'],
+      'Quantity Surveyor':['Quantity Survey Certification'],
+      'Project Engineer':['Project Management Certification'],
+      'Urban Planning Engineer':['Urban Planning Certification'],
+    },
+    skills: {
+      'Structural Engineer':['STAAD Pro','ETABS','AutoCAD'],
+      'Site Engineer':['AutoCAD','Project Management Software'],
+      'Construction Engineer':['AutoCAD','Primavera'],
+      'Transportation Engineer':['AutoCAD','Traffic Simulation Software'],
+      'Geotechnical Engineer':['PLAXIS','GeoStudio'],
+      'Environmental Engineer':['Environmental Modeling Software'],
+      'Water Resources Engineer':['HEC-RAS','AutoCAD'],
+      'Quantity Surveyor':['AutoCAD','Excel'],
+      'Project Engineer':['Primavera','MS Project'],
+      'Urban Planning Engineer':['GIS Software','AutoCAD'],
+    }
+  }
+};
+
+// ── NAVIGATION ─────────────────────────────────
+function goTo(pageId, navId) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById(pageId).classList.add('active');
+  document.getElementById('nav-' + navId).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+function syncLang(val) {
+  pbLang = val;
+  const pbSelect = document.getElementById('pb-lang');
+  if (pbSelect) pbSelect.value = val;
+  
+  // Basic UI Translation for main buttons
+  const isTamil = val === 'tamil';
+  const analyzeBtn = document.querySelector('.btn-hero-primary');
+  const createBtn = document.querySelector('.btn-hero-outline');
+  
+  if (analyzeBtn) analyzeBtn.innerHTML = isTamil ? '<i class="bi bi-search"></i> ரையூம் ஆய்வு' : '<i class="bi bi-search"></i> Analyze Resume';
+  if (createBtn) createBtn.innerHTML = isTamil ? '<i class="bi bi-file-earmark-plus"></i> புதிய ரையூம்' : '<i class="bi bi-file-earmark-plus"></i> Create Resume';
+
+  showToast(isTamil ? 'மொழி மாற்றப்பட்டது: தமிழ்' : 'Language set to English');
+}
+function loadJobs() {
+  const dept = document.getElementById('deptSelect').value;
+  const jobSel = document.getElementById('jobSelect');
+  jobSel.innerHTML = '<option value="">Choose a job role...</option>';
+  if (dept && DEPT_JOBS[dept]) {
+    DEPT_JOBS[dept].jobs.forEach(j => {
+      jobSel.innerHTML += `<option value="${j}">${j}</option>`;
+    });
+  }
+  checkAnalyzeReady();
+}
+
+// Check backend reachability on load
+window.addEventListener('DOMContentLoaded', async () => {
+  try {
+    const res = await fetch(`${BASE_URL}/`);
+    const data = await res.json();
+    console.log('✅ Connected to Placement API:', data.message);
+  } catch (err) {
+    console.error('❌ Could not connect to backend at:', BASE_URL);
+    showToast('⚠️ Backend not connected. Please ensure server is running.');
+  }
+});
+
+function checkAnalyzeReady() {
+  const hasFile = uploadedFile !== null;
+  const hasDept = document.getElementById('deptSelect').value !== '';
+  const hasJob  = document.getElementById('jobSelect').value !== '';
+  document.getElementById('analyzeBtn').disabled = !(hasFile && hasDept && hasJob);
+}
+
+// ── FILE UPLOAD ─────────────────────────────────
+function triggerUpload() { document.getElementById('fileInput').click(); }
+function onFileSelect(e) { if (e.target.files[0]) setFile(e.target.files[0]); }
+function onDragOver(e) { e.preventDefault(); document.getElementById('uploadZone').classList.add('drag-over'); }
+function onDragLeave(e) { document.getElementById('uploadZone').classList.remove('drag-over'); }
+function onDrop(e) {
+  e.preventDefault();
+  document.getElementById('uploadZone').classList.remove('drag-over');
+  if (e.dataTransfer.files[0]) setFile(e.dataTransfer.files[0]);
+}
+function setFile(file) {
+  if (!file.name.match(/\.(pdf|docx)$/i)) { showToast('❌ Only PDF or DOCX files allowed'); return; }
+  if (file.size > 5 * 1024 * 1024) { showToast('❌ File too large (max 5MB)'); return; }
+  uploadedFile = file;
+  document.getElementById('uploadDefault').style.display = 'none';
+  document.getElementById('uploadDone').style.display = 'block';
+  document.getElementById('uploadZone').classList.add('uploaded');
+  document.getElementById('uploadedName').textContent = file.name;
+  checkAnalyzeReady();
+  showToast('✅ File ready!');
+}
+function removeFile() {
+  uploadedFile = null;
+  document.getElementById('fileInput').value = '';
+  document.getElementById('uploadDefault').style.display = 'block';
+  document.getElementById('uploadDone').style.display = 'none';
+  document.getElementById('uploadZone').classList.remove('uploaded');
+  checkAnalyzeReady();
+}
+
+// ── ANALYZE ─────────────────────────────────────
+async function analyzeResume(e) {
+  if (e) e.preventDefault();
+  const dept = document.getElementById('deptSelect').value;
+  const job  = document.getElementById('jobSelect').value;
+  const btn  = document.getElementById('analyzeBtn');
+  
+  if (!uploadedFile || !dept || !job) { showToast('Please complete all fields'); return; }
+
+  // Disable button and show loader
+  if (btn) btn.disabled = true;
+  showLoading('Analyzing your resume... Please wait', 'Our AI is extracting text and identifying your academic data, skills, and experience.');
+
+  try {
+    // Step 1: Upload
+    const formData = new FormData();
+    formData.append('file', uploadedFile);
+    
+    // Add 60s timeout
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 60000);
+
+    const upRes = await fetch(`${BASE_URL}/upload-resume`, { 
+      method: 'POST', 
+      body: formData,
+      signal: controller.signal
+    });
+    clearTimeout(timeoutId);
+
+    if (!upRes.ok) {
+        const errorData = await upRes.json().catch(() => ({}));
+        throw new Error(errorData.detail || `Upload failed with status ${upRes.status}`);
+    }
+
+    const upData = await upRes.json();
+    if (!upData.success) throw new Error(upData.detail || 'Upload failed');
+    sessionId = upData.session_id;
+
+    setLoading('AI Placement Scoring...', 'Identifying domain-specific keywords and matching your profile against industry standards.');
+
+    // Step 2: Get scores
+    const scoreController = new AbortController();
+    const scoreTimeoutId = setTimeout(() => scoreController.abort(), 60000);
+
+    const scoreRes = await fetch(`${BASE_URL}/get-placement-scores`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ session_id: sessionId, department: dept, selected_job: job }),
+      signal: scoreController.signal
+    });
+    clearTimeout(scoreTimeoutId);
+
+    if (!scoreRes.ok) {
+        const errorData = await scoreRes.json().catch(() => ({}));
+        throw new Error(errorData.detail || `Scoring failed with status ${scoreRes.status}`);
+    }
+
+    const scoreData = await scoreRes.json();
+    if (!scoreData.success) throw new Error(scoreData.detail || 'Scoring failed');
+
+    setTimeout(() => {
+      hideLoading();
+      if (btn) btn.disabled = false;
+      renderResults(scoreData, dept, job);
+    }, 800);
+
+  } catch (err) {
+    hideLoading();
+    if (btn) btn.disabled = false;
+    
+    const errMsg = err.name === 'AbortError' ? 'Request timed out after 60s. Please try again.' : (err.message || '');
+    
+    if (errMsg.includes('extract text') || errMsg.includes('scanned')) {
+      showToast('⚠️ Could not read your resume. Try a text-based PDF or DOCX.');
+    } else if (errMsg.includes('Failed to fetch') || errMsg.includes('NetworkError') || err.name === 'AbortError') {
+      showToast('⚠️ ' + (err.name === 'AbortError' ? errMsg : 'Backend not running? Check server on port 8000.'));
+      console.error('Connection failed to:', `${BASE_URL}`, err);
+    } else {
+      showToast('⚠️ ' + (errMsg || 'Analysis error — showing demo results'));
+    }
+    console.warn('Backend error or timeout, showing demo results:', err);
+    renderDemoResults(dept, job);
+  }
+}
+
+
+function renderResults(data, dept, job) {
+  document.getElementById('resultsSection').style.display = 'block';
+  document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth' });
+
+  const deptData = DEPT_JOBS[dept];
+  const requiredSkills = deptData.skills[job] || [];
+  const requiredCerts = deptData.certs[job] || [];
+  const minCgpa = deptData.min_cgpa[job] || 7;
+
+  // ATS Score
+  const atsScore = data.overall_placement_score?.placement_readiness_score || 72;
+  updateDonut(atsScore);
+
+  // Detected Skills
+  const detectedEl = document.getElementById('detectedSkills');
+  const foundSkills = data.general_skills?.programming_basics?.keywords_found || requiredSkills.slice(0,4);
+  detectedEl.innerHTML = foundSkills.map(s => `<span class="skill-chip chip-green">${s}</span>`).join('') || '<span class="skill-chip chip-blue">Skills detected</span>';
+
+  // Missing Skills
+  const missingEl = document.getElementById('missingSkills');
+  const missingSkills = data.domain_skills?.selected_job_match?.skills_missing || requiredSkills.slice(-3);
+  missingEl.innerHTML = missingSkills.slice(0,6).map(s => `<span class="skill-chip chip-red">${s}</span>`).join('') || '<span class="skill-chip chip-orange">No critical missing</span>';
+
+  // AI Suggestions (quick)
+  const suggestEl = document.getElementById('aiSuggestions');
+  const suggestions = [
+    `Add quantifiable achievements with metrics`,
+    `Include keywords relevant to ${job}`,
+    `Highlight missing skills: ${(missingSkills[0] || 'domain skills')}`,
+    `Use action verbs in experience section`,
+    `Add GitHub & LinkedIn profile links`
+  ];
+  suggestEl.innerHTML = suggestions.map(s => `<div class="suggestion-item"><div class="suggestion-dot"></div><span>${s}</span></div>`).join('');
+
+  // Section Scores
+  const scoresEl = document.getElementById('sectionScores');
+  const general = data.general_skills || {};
+  const bars = [
+    { label: 'Programming Skills', score: general.programming_basics?.score || 65 },
+    { label: 'Communication', score: general.communication?.score || 55 },
+    { label: 'Office Tools', score: general.office_tools?.score || 70 },
+    { label: 'Portfolio', score: data.portfolio?.portfolio_score || 60 },
+    { label: 'Template Match', score: data.template_match?.template_match_score || 50 },
+    { label: 'DSA / Aptitude', score: data.domain_skills?.dsa_aptitude?.score || 45 },
+  ];
+  scoresEl.innerHTML = bars.map(b => {
+    const cls = b.score >= 70 ? 'high' : b.score >= 45 ? 'mid' : 'low';
+    return `<div class="score-row">
+      <div class="score-label"><span>${b.label}</span><span>${Math.round(b.score)}%</span></div>
+      <div class="score-bar"><div class="score-fill ${cls}" style="width:${b.score}%"></div></div>
+    </div>`;
+  }).join('');
+
+  // CGPA & Certs
+  const cgpaEl = document.getElementById('cgpaInfo');
+  const cgpaFound = data.academics?.cgpa?.value;
+  const eligible = data.academics?.eligibility?.eligible;
+  let cgpaHtml = `<div class="cgpa-badge ${eligible === false ? 'fail' : ''}">
+    <span class="cgpa-icon">${eligible === false ? '⚠️' : '🎓'}</span>
+    <div>
+      <div class="cgpa-text">${cgpaFound ? `CGPA: ${cgpaFound}` : 'CGPA not detected in resume'}</div>
+      <div class="cgpa-sub">Minimum required for ${job}: ${minCgpa}+</div>
+    </div>
+  </div>
+  <div class="mt-20">
+    <p class="field-label mb-2">Recommended Certifications</p>
+    ${requiredCerts.map(c => `<div class="cert-item"><i class="bi bi-patch-check-fill"></i> ${c}</div>`).join('')}
+  </div>`;
+  cgpaEl.innerHTML = cgpaHtml;
+
+  // Portfolio
+  const portEl = document.getElementById('portfolioInfo');
+  const portData = data.portfolio || {};
+  const portItems = [
+    { name: 'GitHub', found: (portData.present || []).includes('github'), icon: 'bi-github' },
+    { name: 'LinkedIn', found: (portData.present || []).includes('linkedin'), icon: 'bi-linkedin' },
+    { name: 'Portfolio Website', found: (portData.present || []).includes('portfolio'), icon: 'bi-globe2' },
+    { name: 'LeetCode', found: (portData.present || []).includes('leetcode'), icon: 'bi-code-slash' },
+  ];
+  portEl.innerHTML = `
+    <div class="skills-wrap mb-3">
+      ${portItems.map(p => `<span class="skill-chip ${p.found ? 'chip-green' : 'chip-red'}">
+        <i class="bi ${p.icon}"></i> ${p.name} ${p.found ? '✓' : '✗'}
+      </span>`).join('')}
+    </div>
+    <p class="fs-12" style="color:var(--muted)">${portData.recommendation || 'Add GitHub and LinkedIn to your resume for better visibility to recruiters.'}</p>`;
+
+  showToast('✅ Analysis complete!');
+}
+
+function renderDemoResults(dept, job) {
+  const deptData = DEPT_JOBS[dept];
+  const requiredSkills = deptData.skills[job] || [];
+  const requiredCerts = deptData.certs[job] || [];
+  const minCgpa = deptData.min_cgpa[job] || 7;
+  const demoScore = 68;
+
+  document.getElementById('resultsSection').style.display = 'block';
+  document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth' });
+
+  updateDonut(demoScore);
+
+  document.getElementById('detectedSkills').innerHTML = requiredSkills.slice(0,3).map(s =>
+    `<span class="skill-chip chip-green">${s}</span>`).join('');
+  document.getElementById('missingSkills').innerHTML = requiredSkills.slice(3).map(s =>
+    `<span class="skill-chip chip-red">${s}</span>`).join('');
+
+  document.getElementById('aiSuggestions').innerHTML = [
+    `Add ${requiredSkills[0] || 'domain skills'} to your resume`,
+    `Get ${requiredCerts[0] || 'relevant certification'} certificate`,
+    `Add GitHub & LinkedIn profile links`,
+    `Include 3-5 projects in ${dept} domain`,
+    `Add quantifiable achievements with numbers`
+  ].map(s => `<div class="suggestion-item"><div class="suggestion-dot"></div><span>${s}</span></div>`).join('');
+
+  document.getElementById('sectionScores').innerHTML = [
+    { label: 'Programming Skills', score: 65 },
+    { label: 'Communication', score: 50 },
+    { label: 'Office Tools', score: 72 },
+    { label: 'Portfolio', score: 40 },
+    { label: 'Template Match', score: 55 },
+    { label: 'DSA / Aptitude', score: 38 },
+  ].map(b => {
+    const cls = b.score >= 70 ? 'high' : b.score >= 45 ? 'mid' : 'low';
+    return `<div class="score-row">
+      <div class="score-label"><span>${b.label}</span><span>${b.score}%</span></div>
+      <div class="score-bar"><div class="score-fill ${cls}" style="width:${b.score}%"></div></div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('cgpaInfo').innerHTML = `
+    <div class="cgpa-badge">
+      <span class="cgpa-icon">🎓</span>
+      <div><div class="cgpa-text">Add your CGPA to resume (Required: ${minCgpa}+)</div>
+      <div class="cgpa-sub">For ${job} at ${dept} department</div></div>
+    </div>
+    <div class="mt-20">
+      <p class="field-label mb-2">Required Certifications for ${job}</p>
+      ${requiredCerts.map(c => `<div class="cert-item"><i class="bi bi-patch-check-fill"></i> ${c}</div>`).join('')}
+    </div>`;
+
+  document.getElementById('portfolioInfo').innerHTML = `
+    <div class="skills-wrap mb-3">
+      <span class="skill-chip chip-red"><i class="bi bi-github"></i> GitHub ✗</span>
+      <span class="skill-chip chip-red"><i class="bi bi-linkedin"></i> LinkedIn ✗</span>
+      <span class="skill-chip chip-orange"><i class="bi bi-globe2"></i> Portfolio</span>
+    </div>
+    <p class="fs-12" style="color:var(--muted)">⚠️ Add GitHub and LinkedIn profile links to your resume — every recruiter checks these!</p>`;
+
+  showToast('ℹ️ Demo mode — connect backend for real analysis');
+}
+
+// ── DEEP AI ANALYSIS ─────────────────────────────
+
+// Section config: maps section titles to icons + colors
+const DA_SECTIONS = [
+  { keys: ['PLACEMENT READINESS SUMMARY', 'வேலைவாய்ப்புத் தயார்நிலைச் சுருக்கம்'], icon: 'bi-stars', color: 'red', isSummary: true },
+  { keys: ['TOP 3 CRITICAL GAPS', 'CRITICAL GAPS', 'முக்கிய இடைவெளிகள்'], icon: 'bi-exclamation-triangle-fill', color: 'rose' },
+  { keys: ['SKILLS TO ADD IMMEDIATELY', 'SKILLS TO ADD', 'உடனடியாகச் சேர்க்க வேண்டிய திறன்கள்'], icon: 'bi-lightning-fill', color: 'blue' },
+  { keys: ['CERTIFICATIONS TO GET', 'RECOMMENDED CERTIFICATIONS', 'பரிந்துரைக்கப்பட்ட சான்றிதழ்கள்'], icon: 'bi-patch-check-fill', color: 'purple' },
+  { keys: ['DSA', 'APTITUDE PREPARATION', 'DSA & APTITUDE', 'DSA மற்றும் திறன் பயிற்சி'], icon: 'bi-code-slash', color: 'orange' },
+  { keys: ['PROJECTS TO BUILD', 'SUGGESTED PROJECTS', 'பரிந்துரைக்கப்பட்ட திட்டங்கள்'], icon: 'bi-folder-fill', color: 'teal' },
+  { keys: ['PORTFOLIO', 'ONLINE PRESENCE', 'ஆன்லைன் இருப்பு'], icon: 'bi-globe2', color: 'cyan' },
+  { keys: ['ACADEMICS', 'கல்வி'], icon: 'bi-mortarboard-fill', color: 'green' },
+  { keys: ['RESUME QUICK WINS', 'RESUME IMPROVEMENTS', 'ரெஸ்யூம் மேம்பாடுகள்'], icon: 'bi-pencil-square', color: 'amber' },
+  { keys: ['30-DAY PLACEMENT ACTION PLAN', 'ACTION PLAN', '30-DAY', '30 நாள் செயல் திட்டம்'], icon: 'bi-calendar-check-fill', color: 'indigo', isTimeline: true }
+];
+
+function parseAIAnalysis(text) {
+  if (!text) return [];
+  // Split by headings (##, #, ###)
+  const parts = text.split(/^#{1,4}\s+/gm).filter(s => s.trim());
+  const sections = [];
+
+  for (const part of parts) {
+    const lines = part.split('\n');
+    let title = lines[0].replace(/[🎯🚨💻📜🔢📁🌐🎓✏️📅]/g, '').trim();
+    const body = lines.slice(1).join('\n').trim();
+
+    // Find matching config
+    let config = null;
+    const titleUpper = title.toUpperCase();
+    for (const sec of DA_SECTIONS) {
+      if (sec.keys.some(k => titleUpper.includes(k))) {
+        config = sec;
+        break;
+      }
+    }
+    if (!config) {
+      config = { keys: [], icon: 'bi-info-circle-fill', color: 'blue' };
+    }
+
+    sections.push({ title, body, ...config });
+  }
+  return sections;
+}
+
+function bodyToListItems(body) {
+  // Parse bullet points and numbered items into clean list items
+  const lines = body.split('\n').filter(l => l.trim());
+  const items = [];
+  let currentItem = '';
+
+  for (const line of lines) {
+    const trimmed = line.trim();
+    // Detect list items (bullets, numbers, dashes)
+    if (/^[\-\*•]\s/.test(trimmed) || /^\d+[\.\)]\s/.test(trimmed)) {
+      if (currentItem) items.push(currentItem);
+      currentItem = trimmed.replace(/^[\-\*•]\s*/, '').replace(/^\d+[\.\)]\s*/, '');
+    } else if (trimmed.startsWith('**') || trimmed.startsWith('###')) {
+      if (currentItem) items.push(currentItem);
+      currentItem = trimmed;
+    } else {
+      // Continuation of previous item or standalone text
+      if (currentItem) currentItem += ' ' + trimmed;
+      else currentItem = trimmed;
+    }
+  }
+  if (currentItem) items.push(currentItem);
+  return items;
+}
+
+function formatItemHtml(text) {
+  // Convert **bold** to <strong>, keep rest as-is
+  return text
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/^###\s*/, '')
+    .replace(/\*(.+?)\*/g, '<em>$1</em>')
+    .replace(/`(.+?)`/g, '<code style="background:#f1f5f9;padding:1px 5px;border-radius:4px;font-size:12px;">$1</code>');
+}
+
+function renderDeepAnalysis(text, overrideTitle = 'AI Deep Analysis', overrideIcon = 'bi-robot') {
+  const page = document.getElementById('deepAnalysisPage');
+  const titleEl = document.getElementById('daOverlayTitle');
+  if (titleEl) {
+    titleEl.innerHTML = `<i class="bi ${overrideIcon}"></i> ${overrideTitle}`;
+  }
+  const grid = document.getElementById('daCardsGrid');
+  const summaryHero = document.getElementById('daSummaryHero');
+  const summaryText = document.getElementById('daSummaryText');
+
+  grid.innerHTML = '';
+  summaryHero.style.display = 'none';
+
+  const sections = parseAIAnalysis(text);
+
+  if (sections.length === 0) {
+    // Fallback: raw text display
+    grid.innerHTML = `<div class="da-card full-span">
+      <div class="da-card-header"><div class="da-card-icon red"><i class="bi ${overrideIcon}"></i></div>
+      <div class="da-card-title">${overrideTitle}</div></div>
+      <div class="da-card-body"><div class="da-raw-text">${text.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div></div></div>`;
+    page.classList.add('show');
+    return;
+  }
+
+  for (const sec of sections) {
+    // Summary goes to hero banner
+    if (sec.isSummary) {
+      summaryHero.style.display = 'block';
+      const items = bodyToListItems(sec.body);
+      summaryText.innerHTML = items.map(i => formatItemHtml(i)).join('<br><br>');
+      continue;
+    }
+
+    const card = document.createElement('div');
+    card.className = `da-card${sec.isTimeline ? ' full-span' : ''}`;
+
+    const items = bodyToListItems(sec.body);
+    let bodyHtml;
+
+    if (sec.isTimeline && items.length > 0) {
+      // Timeline layout for action plan
+      bodyHtml = `<ul class="da-timeline">${items.map(i =>
+        `<li>${formatItemHtml(i)}</li>`).join('')}</ul>`;
+    } else if (items.length > 0) {
+      bodyHtml = `<ul class="da-list ${sec.color}">${items.map(i =>
+        `<li>${formatItemHtml(i)}</li>`).join('')}</ul>`;
+    } else {
+      bodyHtml = `<p class="da-text">${formatItemHtml(sec.body)}</p>`;
+    }
+
+    card.innerHTML = `
+      <div class="da-card-header">
+        <div class="da-card-icon ${sec.color}"><i class="bi ${sec.icon}"></i></div>
+        <div class="da-card-title">${sec.title}</div>
+      </div>
+      <div class="da-card-body">${bodyHtml}</div>`;
+
+    grid.appendChild(card);
+  }
+
+  page.classList.add('show');
+  page.scrollTo(0, 0);
+}
+
+function closeDeepAnalysis() {
+  document.getElementById('deepAnalysisPage').classList.remove('show');
+}
+
+async function getDeepAnalysis() {
+  if (!sessionId) { 
+    showToast('Demo Mode: Please perform a full analysis first.'); 
+    return; 
+  }
+  const btn = document.getElementById('deepAnalysisBtn');
+  if (btn) btn.disabled = true;
+  showLoading('Analyzing your profile...', 'Our AI is performing a deep scan of your professional profile and matching skills.');
+  
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 60000);
+
+    const res = await fetch(`${BASE_URL}/get-ai-analysis`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ session_id: sessionId, language: pbLang }),
+      signal: controller.signal
+    });
+    
+    clearTimeout(timeoutId);
+    
+    if (!res.ok) throw new Error('Backend error');
+    const data = await res.json();
+    
+    // Artificial delay for UX
+    await new Promise(r => setTimeout(r, 800));
+    hideLoading();
+    if (btn) btn.disabled = false;
+    
+    if (data.success) {
+      renderDeepAnalysis(data.ai_analysis || 'Analysis not available.');
+      showToast('✅ AI Deep Analysis Ready');
+    } else {
+      throw new Error(data.message || 'AI Service Unavailable');
+    }
+
+  } catch (err) {
+    console.warn('Backend failed, showing demo analysis:', err);
+    hideLoading();
+    if (btn) btn.disabled = false;
+    const demoText = `## 🎯 PLACEMENT READINESS SUMMARY\nYour resume shows strong foundational knowledge but requires better professional branding. Focus on bridging technical gaps with certifications.\n\n## 🚨 TOP 3 CRITICAL GAPS\n- **Missing industry certifications** — Enroll in AWS or RedHat courses immediately\n- **Project depth** — Current projects are basic; need complex full-stack implementations\n- **Social presence** — LinkedIn and GitHub are not linked or incomplete\n\n## 💻 SKILLS TO ADD IMMEDIATELY\n- **Docker & Kubernetes** — Critical for modern backend roles\n- **FastAPI or Django** — Professional python frameworks\n- **Unit Testing** — Use PyTest or Jest to show code quality\n\n## 📁 PROJECTS TO BUILD\n- **Real-time Collaboration Tool** — Using WebSockets and React\n- **Microservices-based E-commerce** — Show system design knowledge\n- **AI Chatbot with RAG** — Leverage LangChain and OpenAI/Groq`;
+    renderDeepAnalysis(demoText);
+    showToast('ℹ️ AI Service Offline — Showing Offline Analysis');
+  }
+}
+
+async function openRoadmapGenerator() {
+  if (!sessionId) { 
+    showToast('Offline Mode: Please analyze resume first.'); 
+    const demoRoadmap = `## 🎯 Roadmap Overview\nBecome a job-ready Full Stack Developer in 8 weeks by mastering React, Node.js, and Database optimization.\n\n## 📅 Week-by-Week Plan\n- **Week 1-2**: Master Advanced JavaScript (ES6+, Async/Await, Closures)\n- **Week 3-4**: React.js Fundamentals (Hooks, Context API, React Router)\n- **Week 5-6**: Node.js & Express (REST APIs, Middleware, Authentication)\n- **Week 7-8**: MongoDB & System Design (Schema design, Indexing, Deployment)\n\n## 🛠️ Project Integration\nBuild an E-Commerce Platform:\n- Use React for the frontend with state management\n- Develop RESTful APIs using Node/Express\n- Store products and users in MongoDB\n- Add Stripe for payments\n\n## 📚 Recommended Resources\n- **Course**: FreeCodeCamp Full Stack Curriculum\n- **YouTube**: Traversy Media, Net Ninja\n- **Practice**: LeetCode for algorithms, Frontend Mentor for UI/UX`;
+    renderDeepAnalysis(demoRoadmap, 'Skill Learning Roadmap', 'bi-signpost-split');
+    return;
+  }
+  const btn = document.getElementById('roadmapBtn');
+  if (btn) btn.disabled = true;
+  showLoading('Generating Roadmap...', 'AI is building a custom 8-week skill learning path based on your resume data.');
+  
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 60000);
+
+    const res = await fetch(`${BASE_URL}/generate-roadmap`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ session_id: sessionId, language: pbLang }),
+      signal: controller.signal
+    });
+    
+    clearTimeout(timeoutId);
+    
+    if (!res.ok) throw new Error('Roadmap API error');
+    const data = await res.json();
+    
+    // Artificial delay
+    await new Promise(r => setTimeout(r, 800));
+    hideLoading();
+    if (btn) btn.disabled = false;
+    
+    if (data.success) {
+      renderDeepAnalysis(data.roadmap || 'Roadmap not available.', 'Skill Learning Roadmap', 'bi-signpost-split');
+      showToast('✅ Career Roadmap ready!');
+    } else {
+      throw new Error(data.message || 'AI Generation Failed');
+    }
+
+  } catch (err) {
+    console.warn('Roadmap failed, using offline template:', err);
+    hideLoading();
+    if (btn) btn.disabled = false;
+    const offlineRoadmap = `## 🎯 8-Week Skill Roadmap\nOffline version: Strengthen Core DSA, Aptitude, and Web Development.\n\n## 📅 Weekly Goals\n- **Week 1-2**: Arrays & Strings (LeetCode)\n- **Week 3-4**: Objects & Classes (System Design)\n- **Week 5-8**: Frontend Frameworks & API Projects`;
+    renderDeepAnalysis(offlineRoadmap, 'Skill Learning Roadmap', 'bi-signpost-split');
+    showToast('ℹ️ Showing Standard Placement Roadmap');
+  }
+}
+
+// ── DONUT CHART ──────────────────────────────────
+function updateDonut(score) {
+  const pct = Math.min(100, Math.max(0, score));
+  const arc = document.getElementById('atsArc');
+  arc.setAttribute('stroke-dasharray', `${pct} 100`);
+  arc.classList.toggle('green', pct >= 75);
+  document.getElementById('atsPct').textContent = Math.round(pct) + '%';
+  const grades = [[85,'Excellent'],[70,'Good'],[50,'Average'],[30,'Fair'],[0,'Weak']];
+  document.getElementById('atsGrade').textContent = grades.find(g => pct >= g[0])[1];
+  document.getElementById('atsPct').style.color = pct >= 75 ? 'var(--green)' : pct >= 50 ? 'var(--text)' : 'var(--red)';
+}
+
+// ── CREATE RESUME ────────────────────────────────
+// Dynamic field indexes initialized globally above
+function addProject() {
+  const i = projIdx++;
+  const id = `proj_${i}`;
+  document.getElementById('projectsList').insertAdjacentHTML('beforeend', `
+    <div class="dynamic-item" id="${id}">
+      <button class="remove-item" onclick="removeItem('${id}')"><i class="bi bi-x"></i></button>
+      <div class="form-field"><label class="field-label" for="proj_title_${i}">Project Title</label><input class="field-input" id="proj_title_${i}" name="project_title" autocomplete="organization-title" placeholder="Project Name"/></div>
+      <div class="form-field"><label class="field-label" for="proj_desc_${i}">Description</label><textarea class="field-input" id="proj_desc_${i}" name="project_description" autocomplete="off" rows="2" placeholder="What did you build?"></textarea></div>
+      <div class="form-field"><label class="field-label" for="proj_tech_${i}">Technologies Used</label><input class="field-input" id="proj_tech_${i}" name="project_tech" autocomplete="off" placeholder="React, Node.js..."/></div>
+      <div class="two-col">
+        <div class="form-field"><label class="field-label" for="proj_type_${i}">Type</label><select class="field-input" id="proj_type_${i}" name="project_type" autocomplete="off"><option>Individual Project</option><option>Team Project</option><option>Academic Project</option></select></div>
+        <div class="form-field"><label class="field-label" for="proj_git_${i}">GitHub Link</label><input class="field-input" id="proj_git_${i}" name="project_github" autocomplete="url" placeholder="github.com/..."/></div>
+      </div>
+    </div>`);
+}
+function addInternship() {
+  const i = internIdx++;
+  const id = `intern_${i}`;
+  document.getElementById('internshipsList').insertAdjacentHTML('beforeend', `
+    <div class="dynamic-item" id="${id}">
+      <button class="remove-item" onclick="removeItem('${id}')"><i class="bi bi-x"></i></button>
+      <div class="two-col">
+        <div class="form-field"><label class="field-label" for="intern_role_${i}">Role</label><input class="field-input" id="intern_role_${i}" name="internship_role" autocomplete="organization-title" placeholder="Frontend Developer Intern"/></div>
+        <div class="form-field"><label class="field-label" for="intern_comp_${i}">Company</label><input class="field-input" id="intern_comp_${i}" name="internship_company" autocomplete="organization" placeholder="ABC Tech"/></div>
+      </div>
+      <div class="two-col">
+        <div class="form-field"><label class="field-label" for="intern_loc_${i}">Location</label><input class="field-input" id="intern_loc_${i}" name="internship_location" autocomplete="address-level2" placeholder="Chennai / Remote"/></div>
+        <div class="form-field"><label class="field-label" for="intern_dur_${i}">Duration</label><input class="field-input" id="intern_dur_${i}" name="internship_duration" autocomplete="off" placeholder="June - Aug 2024"/></div>
+      </div>
+      <div class="form-field"><label class="field-label" for="intern_desc_${i}">Description</label><textarea class="field-input" id="intern_desc_${i}" name="internship_description" autocomplete="off" rows="2" placeholder="Work done..."></textarea></div>
+    </div>`);
+}
+function addCert() {
+  const i = certIdx++;
+  const id = `cert_${i}`;
+  document.getElementById('certsList').insertAdjacentHTML('beforeend', `
+    <div class="dynamic-item" id="${id}">
+      <button class="remove-item" onclick="removeItem('${id}')"><i class="bi bi-x"></i></button>
+      <div class="two-col">
+        <div class="form-field"><label class="field-label" for="cert_name_${i}">Certification Name</label><input class="field-input" id="cert_name_${i}" name="certification_name" autocomplete="off" placeholder="Python Certification"/></div>
+        <div class="form-field"><label class="field-label" for="cert_plat_${i}">Platform</label><input class="field-input" id="cert_plat_${i}" name="certification_platform" autocomplete="organization" placeholder="Coursera / NPTEL"/></div>
+      </div>
+    </div>`);
+}
+function removeItem(id) {
+  const el = document.getElementById(id);
+  if (el) el.remove();
+}
+
+let interestIdx = 4;
+function addInterest() {
+  const i = interestIdx++;
+  const id = `c_interest${i}`;
+  document.getElementById('interestsList').insertAdjacentHTML('beforeend', `
+    <div class="form-field" style="position:relative">
+      <label class="field-label visually-hidden" for="${id}">Interest ${i}</label>
+      <input class="field-input" id="${id}" name="interest" autocomplete="off" placeholder="Interest ${i}"/>
+      <button class="remove-item" onclick="this.parentElement.remove()" style="top:12px; right:10px;"><i class="bi bi-x"></i></button>
+    </div>`);
+}
+
+let achieveIdx = 1;
+function addAchievement() {
+  const i = achieveIdx++;
+  const id = `achieve_${i}`;
+  document.getElementById('achievementsList').insertAdjacentHTML('beforeend', `
+    <div class="form-field dynamic-item" style="position:relative">
+      <label class="field-label visually-hidden" for="${id}">Achievement ${i}</label>
+      <input class="field-input" id="${id}" name="achievement" autocomplete="off" placeholder="Achievement detail..."/>
+      <button class="remove-item" onclick="this.parentElement.remove()" style="top:12px; right:10px;"><i class="bi bi-x"></i></button>
+    </div>`);
+}
+
+let hobbyIdx = 1;
+function addHobby() {
+  const i = hobbyIdx++;
+  const id = `hobby_${i}`;
+  document.getElementById('hobbiesList').insertAdjacentHTML('beforeend', `
+    <div class="form-field dynamic-item" style="position:relative">
+      <label class="field-label visually-hidden" for="${id}">Hobby ${i}</label>
+      <input class="field-input" id="${id}" name="hobby" autocomplete="off" placeholder="Reading, Photography, etc."/>
+      <button class="remove-item" onclick="this.parentElement.remove()" style="top:12px; right:10px;"><i class="bi bi-x"></i></button>
+    </div>`);
+}
+
+function addSkill() {
+  const i = Date.now();
+  document.getElementById('skillsList').insertAdjacentHTML('beforeend', `
+    <div class="dynamic-item" style="position:relative">
+      <button class="remove-item" onclick="this.parentElement.remove()" style="top:0; right:0;"><i class="bi bi-x"></i></button>
+      <div class="form-field"><label class="field-label" for="skill_cat_${i}">Skill Category</label><input class="field-input" id="skill_cat_${i}" name="skill_category" autocomplete="off" placeholder="e.g., Databases"/></div>
+      <div class="form-field"><label class="field-label" for="skill_list_${i}">Skills (comma separated)</label><input class="field-input" id="skill_list_${i}" name="skills" autocomplete="off" placeholder="MySQL, PostgreSQL..."/></div>
+    </div>`);
+}
+
+function g(id) { return (document.getElementById(id) || {}).value || ''; }
+
+// ── PLACEHOLDER DEFAULTS ─────────────────────────
+const PLACEHOLDERS = {
+  c_name: 'Rahuman T',
+  c_phone: '+91 98765 43210',
+  c_email: 'rahuman@email.com',
+  c_college: 'Anna University, Chennai',
+  c_linkedin: 'linkedin.com/in/rahuman-t',
+  c_github: 'github.com/rahuman-dev',
+  c_portfolio: 'rahuman.dev',
+  c_summary: 'Highly motivated Engineering student with strong foundations in Web Development and problem-solving. Passionate about building scalable applications and learning new technologies to contribute to innovative projects.',
+  c_degree: 'B.E',
+  c_dept: 'Computer Science and Engineering',
+  c_period: '2022 - 2026',
+  c_cgpa: '8.5',
+  c_12th: '92%',
+  c_12yr: '2022',
+  c_10th: '95%',
+  c_10yr: '2020',
+  c_techskills: 'Python, JavaScript, React.js, Node.js, SQL, Git',
+  c_softskills: 'Effective Communication, Team Leadership, Critical Thinking',
+  c_interest1: 'Full Stack Development',
+  c_interest2: 'Cloud Computing',
+  c_interest3: 'DevOps & Automation',
+  c_tech_achieve: 'Winner of National Level Hackathon 2023 for Smart City Solution',
+  c_nontech_achieve: 'Represented College in Zonal Level Volleyball Tournament',
+  c_hobbies: 'Contributing to Open Source, Photography, Chess',
+  c_ref_name: 'Dr. S. Karthik',
+  c_ref_desig: 'Head of Department - CSE',
+  c_ref_college: 'Anna University',
+  c_ref_contact: 'karthik.s@university.edu'
+};
+
+// Get field value or placeholder
+function gv(id) {
+  const val = g(id).trim();
+  if (val) return { value: val, isMissing: false };
+  return { value: PLACEHOLDERS[id] || 'N/A', isMissing: true };
+}
+
+// Render value with fallback logic
+function rv(id, tag) {
+  const { value, isMissing } = gv(id);
+  const content = isMissing ? `<span class="rv-sample">${value}</span>` : value;
+  return tag ? `<${tag}>${content}</${tag}>` : content;
+}
+
+// Collect dynamic items
+function collectDynamic(containerId, fields) {
+  const items = [];
+  const container = document.getElementById(containerId);
+  if (!container) return items;
+  const itemEls = container.querySelectorAll('.dynamic-item');
+  itemEls.forEach(el => {
+    const inputs = el.querySelectorAll('input, textarea, select');
+    const item = {};
+    fields.forEach((f, i) => {
+      const inp = inputs[i];
+      const val = inp ? (inp.value || '').trim() : '';
+      item[f.key] = { value: val || (PLACEHOLDERS[f.key] || 'N/A'), isMissing: !val };
+    });
+    items.push(item);
+  });
+  return items;
+}
+
+function rvDyn(item, key) {
+  if (item[key].isMissing) return `<span class="rv-sample">${item[key].value}</span>`;
+  return item[key].value;
+}
+
+function countMissing() {
+  let count = 0;
+  for (const id of Object.keys(PLACEHOLDERS)) {
+    if (!g(id).trim()) count++;
+  }
+  return count;
+}
+let customSections = [];
+
+function moveUp(btn) {
+  const card = btn.closest('.section-card');
+  const prev = card.previousElementSibling;
+  if (prev) {
+    card.parentNode.insertBefore(card, prev);
+    showToast('Section moved up');
+  }
+}
+
+function moveDown(btn) {
+  const card = btn.closest('.section-card');
+  const next = card.nextElementSibling;
+  if (next) {
+    card.parentNode.insertBefore(next, card);
+    showToast('Section moved down');
+  }
+}
+
+function deleteSection(btn) {
+  const card = btn.closest('.section-card');
+  const name = card.querySelector('.section-name').textContent;
+  if (confirm(`Are you sure you want to delete the "${name}" section?`)) {
+    card.remove();
+    showToast('Section deleted');
+  }
+}
+
+function openNewSectionModal() {
+  document.getElementById('newSectionModal').classList.add('show');
+}
+
+function closeNewSectionModal() {
+  document.getElementById('newSectionModal').classList.remove('show');
+}
+
+function addCustomSection() {
+  const name = document.getElementById('ns_name').value.trim();
+  const type = document.getElementById('ns_type').value;
+  
+  if (!name) {
+    alert('Please enter a section name');
+    return;
+  }
+  
+  const id = 'custom_' + Date.now();
+  const sectionHtml = `
+    <div class="section-card" data-section-id="${id}" data-custom-type="${type}">
+      <div class="section-controls">
+        <button class="control-btn" onclick="moveUp(this)"><i class="bi bi-arrow-up"></i></button>
+        <button class="control-btn" onclick="moveDown(this)"><i class="bi bi-arrow-down"></i></button>
+        <button class="control-btn delete" onclick="deleteSection(this)"><i class="bi bi-trash"></i></button>
+      </div>
+      <div class="section-header">
+        <div class="section-icon" style="background:#5c6bc0"><i class="bi bi-grid-fill"></i></div>
+        <span class="section-name">${name}</span>
+      </div>
+      <div class="form-field">
+        <label class="field-label" for="custom_content_${id}">Content</label>
+        <textarea class="field-input" id="custom_content_${id}" name="custom_section_content" rows="4" placeholder="Enter content for ${name}..."></textarea>
+      </div>
+    </div>
+  `;
+  
+  document.getElementById('sections-container').insertAdjacentHTML('beforeend', sectionHtml);
+  closeNewSectionModal();
+  document.getElementById('ns_name').value = '';
+  showToast('Custom section added!');
+}
+
+// Update previewResume to be order-aware
+function previewResume() {
+  const sheet = document.querySelector('.resume-page');
+  const missing = countMissing();
+  const warnEl = document.getElementById('rpWarningCount');
+
+  if (missing > 0) {
+    warnEl.textContent = `⚠ ${missing} missing`;
+    warnEl.style.display = 'inline';
+  } else {
+    warnEl.style.display = 'none';
+  }
+
+  // Header and Divider are static
+  let html = `<div class="rv-name">${rv('c_name')}</div>`;
+  html += `<div class="rv-contact">${rv('c_phone')} &nbsp;|&nbsp; ${rv('c_email')}</div>`;
+  html += `<div class="rv-contact">`;
+  const links = ['c_linkedin', 'c_github', 'c_portfolio'].map(id => {
+    const { value, isMissing } = gv(id);
+    if (isMissing) return `<span class="rv-missing">${value}</span>`;
+    return `<a href="https://${value}" target="_blank">${value}</a>`;
+  });
+  html += links.join(' &nbsp;|&nbsp; ');
+  html += `</div>`;
+  html += `<div class="rv-divider"></div>`;
+
+  // Dynamic sections based on order in DOM
+  const sectionCards = document.querySelectorAll('#sections-container > .section-card');
+  
+  sectionCards.forEach(card => {
+    const sid = card.getAttribute('data-section-id');
+    if (!sid || sid === 'personal') return;
+    
+    if (sid === 'summary') {
+      html += `<div class="rv-section"><div class="rv-section-title">Professional Summary</div><p class="rv-text">${rv('c_summary')}</p></div>`;
+    } else if (sid === 'education') {
+      html += `<div class="rv-section"><div class="rv-section-title">Education</div><div class="rv-item">`;
+      html += `<div class="rv-row"><span class="rv-bold">${rv('c_degree')} — ${rv('c_dept')}</span><span class="rv-sub">${rv('c_period')}</span></div>`;
+      html += `<div class="rv-text">${rv('c_college')} &nbsp;|&nbsp; CGPA: ${rv('c_cgpa')}</div>`;
+      html += `<div class="rv-sub">12th: ${rv('c_12th')} (${rv('c_12yr')}) &nbsp;|&nbsp; 10th: ${rv('c_10th')} (${rv('c_10yr')})</div></div></div>`;
+    } else if (sid === 'skills') {
+      const skillItems = card.querySelectorAll('#skillsList .dynamic-item');
+      if (skillItems.length > 0) {
+        html += `<div class="rv-section"><div class="rv-section-title">Skills</div>`;
+        skillItems.forEach(item => {
+          const inputs = item.querySelectorAll('input');
+          const cat = (inputs[0].value || inputs[0].placeholder || '').trim();
+          const list = (inputs[1].value || '').trim();
+          if (list) {
+            html += `<div class="rv-text"><strong>${cat}:</strong> ${list}</div>`;
+          } else if (inputs[1].placeholder && !inputs[1].value) {
+            // Fallback for default ones
+            const sample = inputs[1].placeholder.split(', ')[0];
+            html += `<div class="rv-text"><strong>${cat}:</strong> <span class="rv-sample">${sample}...</span></div>`;
+          }
+        });
+        html += `</div>`;
+      }
+    } else if (sid === 'interests') {
+      html += `<div class="rv-section"><div class="rv-section-title">Areas of Interest</div><div class="rv-chips">`;
+      const interestInputs = card.querySelectorAll('#interestsList .field-input');
+      interestInputs.forEach(inp => {
+        const val = inp.value.trim();
+        if (val) html += `<span class="rv-chip">${val}</span>`;
+        else if (inp.placeholder && inp.placeholder.includes('e.g.')) {
+           // Provide a sample if it's one of the initial placeholders
+           html += `<span class="rv-chip rv-missing">${inp.placeholder.split('e.g., ')[1].replace(')','')}</span>`;
+        }
+      });
+      html += `</div></div>`;
+    } else if (sid === 'projects') {
+      const items = collectDynamic('projectsList', [{key:'title'},{key:'desc'},{key:'tech'},{key:'type'},{key:'github'}]);
+      if (items.length > 0) {
+        html += `<div class="rv-section"><div class="rv-section-title">Projects</div>`;
+        items.forEach(p => {
+          html += `<div class="rv-item"><div class="rv-row"><span class="rv-bold">${rvDyn(p,'title')}</span><span class="rv-sub">${rvDyn(p,'type')} &nbsp;|&nbsp; ${rvDyn(p,'github')}</span></div>`;
+          html += `<div class="rv-bullet">${rvDyn(p,'desc')}</div><div class="rv-sub">Tech: ${rvDyn(p,'tech')}</div></div>`;
+        });
+        html += `</div>`;
+      }
+    } else if (sid === 'internships') {
+      const items = collectDynamic('internshipsList', [{key:'role'},{key:'company'},{key:'location'},{key:'duration'},{key:'desc'}]);
+      if (items.length > 0) {
+        html += `<div class="rv-section"><div class="rv-section-title">Internships</div>`;
+        items.forEach(i => {
+          html += `<div class="rv-item"><div class="rv-row"><span class="rv-bold">${rvDyn(i,'role')}</span><span class="rv-sub">${rvDyn(i,'duration')}</span></div>`;
+          html += `<div class="rv-text">${rvDyn(i,'company')} &nbsp;|&nbsp; ${rvDyn(i,'location')}</div><div class="rv-bullet">${rvDyn(i,'desc')}</div></div>`;
+        });
+        html += `</div>`;
+      }
+    } else if (sid === 'certs') {
+      const items = collectDynamic('certsList', [{key:'name'},{key:'platform'}]);
+      if (items.length > 0) {
+        html += `<div class="rv-section"><div class="rv-section-title">Certifications</div>`;
+        items.forEach(c => html += `<div class="rv-bullet">${rvDyn(c,'name')} — <span class="rv-sub">${rvDyn(c,'platform')}</span></div>`);
+        html += `</div>`;
+      }
+    } else if (sid === 'achievements') {
+      const inputs = card.querySelectorAll('#achievementsList .field-input');
+      let achHtml = '';
+      inputs.forEach(inp => { if(inp.value.trim()) achHtml += `<div class="rv-bullet">${inp.value.trim()}</div>`; });
+      // Include initial ones if set
+      if (gv('c_tech_achieve').value && gv('c_tech_achieve').value !== 'N/A') achHtml += `<div class="rv-bullet"><strong>Technical:</strong> ${gv('c_tech_achieve').value}</div>`;
+      if (gv('c_nontech_achieve').value && gv('c_nontech_achieve').value !== 'N/A') achHtml += `<div class="rv-bullet"><strong>Non-Technical:</strong> ${gv('c_nontech_achieve').value}</div>`;
+      if (achHtml) html += `<div class="rv-section"><div class="rv-section-title">Achievements</div>${achHtml}</div>`;
+    } else if (sid === 'hobbies') {
+      const inputs = card.querySelectorAll('#hobbiesList .field-input');
+      const hobs = [];
+      if (gv('c_hobbies').value && gv('c_hobbies').value !== 'N/A') hobs.push(gv('c_hobbies').value);
+      inputs.forEach(inp => { if(inp.value.trim()) hobs.push(inp.value.trim()); });
+      if (hobs.length > 0) html += `<div class="rv-section"><div class="rv-section-title">Hobbies</div><p class="rv-text">${hobs.join(', ')}</p></div>`;
+    } else if (sid === 'references') {
+      html += `<div class="rv-section"><div class="rv-section-title">References</div><div class="rv-item"><div class="rv-bold">${rv('c_ref_name')}</div><div class="rv-text">${rv('c_ref_desig')}</div><div class="rv-sub">${rv('c_ref_college')} &nbsp;|&nbsp; ${rv('c_ref_contact')}</div></div></div>`;
+    } else if (sid.startsWith('custom_')) {
+      const name = card.querySelector('.section-name').textContent;
+      const content = card.querySelector('textarea').value;
+      if (content.trim()) {
+        html += `<div class="rv-section"><div class="rv-section-title">${name}</div><p class="rv-text">${content}</p></div>`;
+      }
+    }
+  });
+
+  sheet.innerHTML = html;
+  document.getElementById('resumePreviewPage').classList.add('show');
+  document.getElementById('resumePreviewPage').scrollTo(0, 0);
+  document.body.classList.add('no-scroll');
+}
+
+function closeResumePreview() {
+  document.getElementById('resumePreviewPage').classList.remove('show');
+  document.body.classList.remove('no-scroll'); // Restore background scroll
+}
+
+// ── DOWNLOAD RESUME ──────────────────────────────
+let pendingDownloadType = 'html';
+
+function downloadResume() {
+  const missing = countMissing();
+  if (missing > 5) {
+    document.getElementById('dlModalText').innerHTML =
+      `<strong>${missing} fields</strong> are empty. They will appear in <strong style="color:#64748b">grey</strong> in your resume using sample data.`;
+    document.getElementById('dlModalOverlay').classList.add('show');
+    pendingDownloadType = 'all';
+  } else {
+    doDownload();
+  }
+}
+
+function downloadFromPreview() {
+  const missing = countMissing();
+  if (missing > 0) {
+    document.getElementById('dlModalText').innerHTML =
+      `<strong>${missing} fields</strong> are still empty. Sample data will be used for these sections in the PDF.`;
+    document.getElementById('dlModalOverlay').classList.add('show');
+    pendingDownloadType = 'all';
+  } else {
+    doDownload();
+  }
+}
+
+function closeDlModal() {
+  document.getElementById('dlModalOverlay').classList.remove('show');
+}
+
+function confirmDownload() {
+  closeDlModal();
+  doDownload();
+}
+
+/**
+ * Correct PDF Generation function targeting .resume-page
+ */
+function doDownload() {
+  const name = gv('c_name').value || 'Resume';
+  const element = document.querySelector(".resume-page");
+  
+  if (!element) return;
+
+  // Ensure content is fresh
+  previewResume();
+  
+  showLoading('Generating PDF...', 'Capturing A4 layout precisely');
+
+  const opt = {
+    margin: 0,
+    filename: `Resume_${name.replace(/\s+/g,'_')}.pdf`,
+    image: { type: 'jpeg', quality: 1 },
+    html2canvas: {
+      scale: 3, // Higher scale for text clarity
+      scrollY: 0,
+      useCORS: true,
+      logging: false,
+      backgroundColor: '#FFFFFF'
+    },
+    jsPDF: {
+      unit: 'px',
+      format: [794, 1123],
+      orientation: 'portrait'
+    }
+  };
+
+  // Delay for layout paint
+  setTimeout(() => {
+    html2pdf().set(opt).from(element).save().then(() => {
+      hideLoading();
+      showToast('✅ PDF generated successfully!');
+    }).catch(err => {
+      console.error('PDF Error:', err);
+      // Fallback: If library fails, offer Print Browser option
+      hideLoading();
+      if(confirm('PDF library encountered an error. Would you like to use the browser print service instead?')) {
+        window.print();
+      }
+    });
+  }, 600);
+}
+
+// ── UTILS ────────────────────────────────────────
+function showLoading(text, sub) {
+  const el = document.getElementById('loadingOverlay');
+  if (!el) return;
+  document.getElementById('loadingText').textContent = text;
+  document.getElementById('loadingSub').textContent = sub;
+  el.style.display = 'flex';
+  setTimeout(() => el.classList.add('show'), 10);
+}
+function setLoading(text, sub) {
+  const t = document.getElementById('loadingText');
+  const s = document.getElementById('loadingSub');
+  if (t) t.textContent = text;
+  if (s) s.textContent = sub;
+}
+function hideLoading() { 
+  const el = document.getElementById('loadingOverlay');
+  if (!el) return;
+  el.classList.remove('show');
+  setTimeout(() => { if (!el.classList.contains('show')) el.style.display = 'none'; }, 300);
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toastMsg');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+// Init
+document.getElementById('deptSelect').addEventListener('change', checkAnalyzeReady);
+document.getElementById('jobSelect').addEventListener('change', checkAnalyzeReady);
+</script>
+<!-- PLACEBOT INJECTION START -->
+<style>
+   /* Color Options */
+   :root {
+     --pb-primary: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
+     --pb-primary-hover: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+   }
+
+   /* Make the closed chatbot button more attractive */
+   .chatbot-trigger {
+     position: fixed;
+     bottom: 82px; /* Kept offset for bottom nav */
+     right: 20px;
+     width: 60px;
+     height: 60px;
+     border-radius: 50%;
+     background: var(--pb-primary);
+     border: none;
+     color: white;
+     font-size: 24px;
+     display: flex;
+     align-items: center;
+     justify-content: center;
+     box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+     cursor: pointer;
+     transition: all 0.3s ease;
+     z-index: 99990;
+     animation: pb-pulse-btn 2s infinite;
+   }
+   
+   .chatbot-trigger:hover {
+     transform: scale(1.1);
+     box-shadow: 0 6px 30px rgba(102, 126, 234, 0.6);
+   }
+
+   .chatbot-trigger.open {
+      animation: none;
+      transform: scale(0.9);
+   }
+   
+   /* Add a pulse animation to attract attention */
+   @keyframes pb-pulse-btn {
+     0%, 100% { transform: scale(1); }
+     50% { transform: scale(1.05); box-shadow: 0 0 24px rgba(102, 126, 234, 0.6); }
+   }
+
+   /* Notification badge */
+   .notification-badge {
+     position: absolute;
+     top: -4px;
+     right: -4px;
+     background: #ef4444;
+     color: white;
+     font-size: 11px;
+     font-weight: 700;
+     width: 22px;
+     height: 22px;
+     display: flex;
+     align-items: center;
+     justify-content: center;
+     border-radius: 50%;
+     border: 2px solid white;
+     box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+   }
+
+   /* Sleek chat window */
+   .chatbot-window {
+     position: fixed;
+     bottom: 155px; /* Above the button and bottom nav */
+     right: 20px;
+     width: 380px;
+     max-width: calc(100vw - 40px);
+     height: 600px;
+     max-height: calc(100vh - 180px);
+     background: white;
+     border-radius: 16px;
+     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+     overflow: hidden;
+     z-index: 99999;
+     display: none;
+     flex-direction: column;
+     font-family: 'Poppins', sans-serif;
+     transform-origin: bottom right;
+   }
+   
+   /* Header with gradient */
+   .chatbot-header {
+     background: var(--pb-primary);
+     padding: 16px 20px;
+     color: white;
+     display: flex;
+     align-items: center;
+     justify-content: space-between;
+     flex-shrink: 0;
+   }
+
+   .chatbot-header-text {
+      display: flex;
+      flex-direction: column;
+   }
+   
+   .chatbot-header h3 {
+     font-size: 16px;
+     font-family: 'Nunito', sans-serif;
+     font-weight: 800;
+     margin: 0;
+   }
+   
+   .chatbot-status {
+     font-size: 11px;
+     opacity: 0.9;
+     display: flex;
+     align-items: center;
+     margin-top: 2px;
+   }
+   
+   .online-dot {
+     width: 8px;
+     height: 8px;
+     background: #4ade80;
+     border-radius: 50%;
+     margin-right: 6px;
+     animation: pb-blink 1.5s infinite;
+   }
+   @keyframes pb-blink { 0%, 100% {opacity: 1} 50% {opacity: 0.3} }
+
+   .pb-header-actions {
+     display: flex; gap: 8px;
+   }
+   .pb-header-btn {
+     background: rgba(255,255,255,0.2);
+     border: none; border-radius: 8px;
+     width: 32px; height: 32px;
+     color: white; font-size: 14px;
+     cursor: pointer; transition: all 0.2s;
+     display: flex; align-items: center; justify-content: center;
+   }
+   .pb-header-btn:hover { background: rgba(255,255,255,0.3); }
+
+   /* Smooth message bubbles */
+   .message-container {
+     flex: 1;
+     overflow-y: auto;
+     padding: 20px 16px;
+     background: #f8fafc;
+     display: flex;
+     flex-direction: column;
+     gap: 16px;
+   }
+   
+   .message-container::-webkit-scrollbar { width: 5px; }
+   .message-container::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+
+   .pb-msg-row { display: flex; flex-direction: column; }
+   .pb-msg-row.user { align-items: flex-end; }
+   .pb-msg-row.bot { align-items: flex-start; }
+
+   .pb-msg-bubble {
+     padding: 12px 16px;
+     font-size: 13.5px;
+     line-height: 1.5;
+     position: relative;
+     box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+     max-width: 85%;
+     animation: slideInMsg 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+     word-wrap: break-word;
+   }
+   
+   /* Bot messages */
+   .pb-msg-bubble.bot {
+     background: #ffffff;
+     border: 1px solid #e2e8f0;
+     color: #1e293b;
+     border-radius: 16px 16px 16px 4px;
+   }
+   
+   /* User messages */
+   .pb-msg-bubble.user {
+     background: var(--pb-primary);
+     color: white;
+     border-radius: 16px 16px 4px 16px;
+   }
+   
+   .pb-timestamp {
+     font-size: 10.5px;
+     color: #94a3b8;
+     margin-top: 4px;
+     align-self: flex-start;
+     margin-left: 4px;
+     margin-right: 4px;
+     font-weight: 500;
+   }
+   .pb-msg-row.user .pb-timestamp { align-self: flex-end; }
+
+   @keyframes slideInMsg {
+     from { opacity: 0; transform: translateY(15px); }
+     to { opacity: 1; transform: translateY(0); }
+   }
+
+   /* Modern quick action buttons */
+   .quick-actions-scroll {
+     width: 100%;
+     overflow-x: auto;
+     padding: 12px 16px;
+     background: white;
+     border-top: 1px solid #f1f5f9;
+     flex-shrink: 0;
+   }
+   .quick-actions-scroll::-webkit-scrollbar { height: 0px; }
+   .quick-actions {
+     display: flex;
+     gap: 8px;
+     flex-wrap: nowrap;
+   }
+   
+   .quick-action-btn {
+     background: white;
+     border: 1.5px solid #e2e8f0;
+     padding: 8px 16px;
+     border-radius: 20px;
+     font-size: 12px;
+     font-weight: 600;
+     color: #475569;
+     cursor: pointer;
+     transition: all 0.2s ease;
+     display: flex;
+     align-items: center;
+     gap: 6px;
+     white-space: nowrap;
+   }
+   
+   .quick-action-btn:hover {
+     background: #667eea;
+     color: white;
+     border-color: #667eea;
+     transform: translateY(-2px);
+   }
+
+   /* Improved input area */
+   .input-container {
+     padding: 12px 16px 16px;
+     background: white;
+     display: flex;
+     gap: 10px;
+     align-items: center;
+     flex-shrink: 0;
+     border-top: 1px solid #e2e8f0;
+   }
+   
+   .chat-input {
+     flex: 1;
+     border: 1.5px solid #e2e8f0;
+     border-radius: 24px;
+     padding: 14px 20px;
+     font-size: 14px;
+     outline: none;
+     background: #f8fafc;
+     font-family: "Poppins", sans-serif;
+     transition: all 0.2s ease;
+     min-width: 0; /* Prevents overflow */
+   }
+   
+   .chat-input:focus {
+     border-color: #667eea;
+     background: white;
+     box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+   }
+   
+   .send-button {
+     width: 48px;
+     height: 48px;
+     border-radius: 50%;
+     background: var(--pb-primary);
+     color: white;
+     border: none;
+     cursor: pointer;
+     display: flex;
+     align-items: center;
+     justify-content: center;
+     transition: all 0.2s ease;
+     font-size: 18px;
+     flex-shrink: 0;
+   }
+   
+   .send-button:hover:not(:disabled) {
+     transform: scale(1.05);
+     box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+   }
+   .send-button:disabled { opacity: 0.6; cursor: not-allowed; }
+
+   .extra-btn {
+      background: none; border: none; font-size: 20px; color: #94a3b8; cursor: pointer; transition: color 0.2s;
+      padding: 4px; display: flex; align-items: center; justify-content: center;
+   }
+   .extra-btn:hover { color: #667eea; }
+
+   /* Typing Indicator */
+   .pb-typing-indicator {
+     display: flex;
+     gap: 5px;
+     padding: 8px 12px;
+   }
+   .pb-typing-indicator span {
+     width: 8px;
+     height: 8px;
+     background: #94a3b8;
+     border-radius: 50%;
+     animation: pb-bounce 1.4s infinite;
+   }
+   .pb-typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+   .pb-typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+   
+   @keyframes pb-bounce {
+     0%, 60%, 100% { transform: translateY(0); }
+     30% { transform: translateY(-5px); }
+   }
+
+   /* Backdrop */
+   #placebot-backdrop {
+     position: fixed; inset: 0; z-index: 99998;
+     background: rgba(0,0,0,0.3); opacity: 0; pointer-events: none;
+     transition: opacity 0.3s ease; backdrop-filter: blur(2px);
+   }
+   #placebot-backdrop.visible { opacity: 1; pointer-events: all; }
+
+   /* Mobile Responsive */
+   @media (max-width: 768px) {
+     .chatbot-window {
+       width: 100vw;
+       max-width: 100vw;
+       height: 100vh;
+       max-height: 100vh;
+       bottom: 0;
+       right: 0;
+       border-radius: 0;
+     }
+     
+     .chatbot-trigger {
+       bottom: 80px; /* Adjust if bottom nav exists */
+       right: 16px;
+       width: 56px;
+       height: 56px;
+     }
+
+     #placebot-backdrop { display: none; } /* full screen on mobile, no dark backdrop needed */
+   }
+
+   /* Open/close animations inside JS but setup here */
+   @keyframes slideUpWindow {
+     from { opacity: 0; transform: translateY(30px) scale(0.95); }
+     to { opacity: 1; transform: translateY(0) scale(1); }
+   }
+   @keyframes slideDownWindow {
+     from { opacity: 1; transform: translateY(0) scale(1); }
+     to { opacity: 0; transform: translateY(30px) scale(0.95); }
+   }
+   .chat-open-anim { animation: slideUpWindow 0.35s cubic-bezier(0.2, 0.8, 0.2, 1) forwards !important; }
+   .chat-close-anim { animation: slideDownWindow 0.25s ease forwards !important; }
+
+</style>
+
+<div id="placebot-backdrop" onclick="pbToggle()"></div>
+
+<button class="chatbot-trigger" id="placebot-btn" onclick="pbToggle()">
+  <i class="bi bi-robot"></i>
+  <span class="notification-badge" id="pb-notif-badge" style="display:none">1</span>
+</button>
+
+<div class="chatbot-window" id="placebot-window">
+  <div class="chatbot-header">
+    <div class="chatbot-header-text">
+      <h3>PlaceBot AI</h3>
+      <div class="chatbot-status">
+        <span class="online-dot"></span>
+        <span>Online • Usually replies instantly</span>
+      </div>
+    </div>
+    <div class="pb-header-actions">
+      <button class="pb-header-btn" onclick="pbClearChat()" title="Clear Chat"><i class="bi bi-trash3-fill"></i></button>
+      <button class="pb-header-btn" onclick="pbToggle()" title="Close"><i class="bi bi-x-lg"></i></button>
+    </div>
+  </div>
+
+  <div class="message-container" id="pb-messages"></div>
+
+  <div class="quick-actions-scroll">
+    <div class="quick-actions">
+      <button class="quick-action-btn" onclick="pbQuick('CSE, 7.5 CGPA, Python & React knowledge - where can I apply?')">📊 Assess My Profile</button>
+      <button class="quick-action-btn" onclick="pbQuick('Give me LinkedIn profile tips')">💼 LinkedIn Tips</button>
+      <button class="quick-action-btn" onclick="pbQuick('How to build a solid GitHub portfolio?')">💻 GitHub Advice</button>
+      <button class="quick-action-btn" onclick="pbQuick('Give me a 30-day placement preparation plan')">📅 30-Day Plan</button>
+    </div>
+  </div>
+
+  <div class="input-container">
+    <input 
+      type="text" 
+      class="chat-input" 
+      id="pb-input"
+      placeholder="Type your message..."
+      onkeypress="if(event.key==='Enter') pbSend()"
+    />
+    <button class="send-button" id="pb-send-btn" onclick="pbSend()">
+      <i class="bi bi-send-fill" style="margin-left: -2px; margin-top: 2px;"></i>
+    </button>
+  </div>
+</div>
+
+<script>
+const PB_SYSTEM = `You are PlaceBot — a friendly AI Placement Assistant for engineering college students in India.
+Your job:
+- Help students understand which companies they are eligible for based on their Branch + CGPA + Skills
+- Give LinkedIn profile tips, GitHub portfolio advice, resume improvement suggestions
+- Provide interview preparation tips and 30/60/90-day action plans
+Rules:
+- Always respond in English — friendly and encouraging tone
+- Keep responses concise (under 200 words) and formatted nicely
+- Use emojis`;
+
+let pbOpen = false, pbMessages = [], pbLoading = false;
+let pbUnreadCount = 0; 
+let pbLang = "english";
+
+function pbFormatTime(date) {
+    let hours = date.getHours();
+    let minutes = date.getMinutes();
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    hours = hours % 12;
+    hours = hours ? hours : 12; 
+    minutes = minutes < 10 ? '0'+minutes : minutes;
+    return hours + ':' + minutes + ' ' + ampm;
+}
+
+function pbToggle() {
+  const win = document.getElementById('placebot-window');
+  const backdrop = document.getElementById('placebot-backdrop');
+  const btn = document.getElementById('placebot-btn');
+  const icon = btn.querySelector('i');
+  
+  if (!pbOpen) {
+    // Opening
+    pbOpen = true;
+    win.style.display = 'flex';
+    win.classList.remove('chat-close-anim');
+    win.classList.add('chat-open-anim');
+    backdrop.classList.add('visible');
+    btn.classList.add('open');
+    icon.className = 'bi bi-x-lg';
+    
+    // Clear notification
+    pbUnreadCount = 0;
+    updateBadge();
+    
+    if (pbMessages.length === 0) pbInitMsg();
+    
+    setTimeout(() => { document.getElementById('pb-input').focus(); }, 350);
+  } else {
+    // Closing
+    pbOpen = false;
+    win.classList.remove('chat-open-anim');
+    win.classList.add('chat-close-anim');
+    backdrop.classList.remove('visible');
+    btn.classList.remove('open');
+    icon.className = 'bi bi-robot';
+    
+    setTimeout(() => { win.style.display = 'none'; }, 280);
+  }
+}
+
+function updateBadge() {
+    const badge = document.getElementById('pb-notif-badge');
+    if(pbUnreadCount > 0 && !pbOpen) {
+        badge.textContent = pbUnreadCount;
+        badge.style.display = 'flex';
+    } else {
+        badge.style.display = 'none';
+    }
+}
+
+function pbClearChat() {
+    if(confirm('Clear all chat history?')) {
+        pbMessages = [];
+        document.getElementById('pb-messages').innerHTML = '';
+        pbUnreadCount = 0;
+        updateBadge();
+        pbInitMsg();
+    }
+}
+
+function pbInitMsg() {
+  // First unread message ping
+  if(!pbOpen) {
+      pbUnreadCount++;
+      updateBadge();
+  }
+  pbAddMsg('bot', 'Greetings! 🎓 I am **PlaceBot** — your Placement Assistant!\n\nTell me your **Branch, CGPA, Skills** — and I will provide eligible companies & a career action plan immediately! 💪\n\n*Example: "CSE, 7.5 CGPA, Python & React"*');
+}
+
+function pbAddMsg(role, text) {
+  pbMessages.push({ role, content: text });
+  const c = document.getElementById('pb-messages');
+  const row = document.createElement('div');
+  row.className = 'pb-msg-row ' + (role === 'user' ? 'user' : 'bot');
+  
+  // Format bold and italics
+  const html = text
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+    .replace(/\n/g, '<br>');
+    
+  const timeStr = pbFormatTime(new Date());
+
+  row.innerHTML = `
+    <div class="pb-msg-bubble ${role}">${html}</div>
+    <div class="pb-timestamp">${timeStr}${role==='user'? ' <i class="bi bi-check2-all text-primary" style="color: #667eea!important; margin-left: 2px;" title="Read"></i>':''}</div>
+  `;
+  
+  c.appendChild(row);
+  c.scrollTop = c.scrollHeight;
+  
+  if(role === 'bot' && !pbOpen) {
+    pbUnreadCount++;
+    updateBadge();
+  }
+}
+
+function pbShowTyping() {
+  const c = document.getElementById('pb-messages');
+  const row = document.createElement('div');
+  row.className = 'pb-msg-row bot'; row.id = 'pb-typing-row';
+  row.innerHTML = '<div class="pb-msg-bubble bot" style="padding: 10px 16px;"><div class="pb-typing-indicator"><span></span><span></span><span></span></div></div>';
+  c.appendChild(row);
+  c.scrollTop = c.scrollHeight;
+}
+
+function pbHideTyping() {
+  const el = document.getElementById('pb-typing-row');
+  if (el) el.remove();
+}
+
+function pbQuick(text) {
+  document.getElementById('pb-input').value = text;
+  pbSend();
+}
+
+async function pbSend() {
+  const inputEl = document.getElementById('pb-input');
+  const text = inputEl.value.trim();
+  if (!text || pbLoading) return;
+  
+  pbAddMsg('user', text);
+  inputEl.value = '';
+  pbLoading = true;
+  document.getElementById('pb-send-btn').disabled = true;
+  pbShowTyping();
+  
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 60000);
+
+    const res = await fetch(`${BASE_URL}/placebot`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: text }),
+      signal: controller.signal
+    });
+    
+    clearTimeout(timeoutId);
+
+    if (!res.ok) throw new Error('Server error');
+    
+    const data = await res.json();
+    pbHideTyping();
+    pbAddMsg('bot', data.reply || '❌ No reply received from AI.');
+  } catch (err) {
+    pbHideTyping();
+    pbAddMsg('bot', '❌ Error connecting to PlaceBot. Check backend server.');
+  }
+ 
+  pbLoading = false;
+  document.getElementById('pb-send-btn').disabled = false;
+  setTimeout(() => { document.getElementById('pb-input').focus(); }, 50);
+}
+
+// Show init message on load
+window.addEventListener("DOMContentLoaded", () => {
+   if (pbMessages.length === 0) pbInitMsg();
+});
+</script>
+<!-- PLACEBOT INJECTION END -->
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
