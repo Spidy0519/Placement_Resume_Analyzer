@@ -41,7 +41,6 @@ sessions: Dict[str, Any] = {}
 template_store: dict = {"loaded": False, "data": None}
 
 
-# ── Startup Event ─────────────────────────────────────
 @app.on_event("startup")
 async def startup_event():
     """Pre-load AI models to avoid hanging on first request."""
@@ -52,7 +51,7 @@ async def startup_event():
         logger.info("✅ Embedding model (all-MiniLM-L6-v2) loaded successfully.")
     except Exception as e:
         logger.error(f"❌ Critical error during startup: {e}")
-        logger.info("Server will continue, but RAG analysis might fail on first run.")
+        logger.info("Server will continue, but RAG analysis might fail on first run.") 
 
 
 # ── Models ────────────────────────────────────────────
