@@ -27,3 +27,9 @@ temp/
 
 # Logs
 *.log
+
+venv/
+backend/venv/
+__pycache__/
+.env
+*.pyc
