@@ -47,8 +47,7 @@ async def startup_event():
     """Pre-load AI models to avoid hanging on first request."""
     logger.info("Initializing system... Pre-loading models.")
     try:
-        from app.rag_engine import get_embedding_model  # type: ignore
-        # This will trigger the download/load of the model if needed
+        from app.rag_engine import get_embedding_model
         model = get_embedding_model()
         logger.info("✅ Embedding model (all-MiniLM-L6-v2) loaded successfully.")
     except Exception as e:
