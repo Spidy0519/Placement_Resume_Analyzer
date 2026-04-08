@@ -1575,7 +1575,13 @@
 // ═══════════════════════════════════════════════
 // CONFIG — change BASE_URL to your FastAPI server
 // ═══════════════════════════════════════════════
-const BASE_URL = 'http://127.0.0.1:8000';
+const BASE_URL = (function() {
+  const host = window.location.hostname;
+  if (host === 'localhost' || host === '127.0.0.1') {
+    return 'http://127.0.0.1:8000';
+  }
+  return 'https://placement-resume-analyzer.vercel.app';
+})();
 let sessionId = null;
 let uploadedFile = null;
 let projIdx = 1, internIdx = 1, certIdx = 1; // Indexes for dynamic fields
